@@ -20,5 +20,9 @@ ENV PYTHONUNBUFFERED=1
 # Expor a porta que o Flask usará
 EXPOSE 5000
 
+# Criar usuário não-root
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
+
 # Comando para iniciar a aplicação com Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.main:app"]
