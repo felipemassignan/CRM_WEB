@@ -14,31 +14,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Inicializar aplicaÁ„o
+# Inicializar aplica√ß√£o
 app = Flask(__name__)
 
-# Obter a URL do banco de dados da vari·vel de ambiente
+# Obter a URL do banco de dados da vari√°vel de ambiente
 database_url = os.getenv('DATABASE_URL')
 
 if not database_url:
-    logger.warning("DATABASE_URL n„o est· definida. Usando SQLite como fallback.")
+    logger.warning("DATABASE_URL n√£o est√° definida. Usando SQLite como fallback.")
     database_url = "sqlite:///tmp/app.db"
 else:
     logger.info(f"Conectando ao PostgreSQL: {database_url.split('@')[0].split('://')[0]}://*****@{database_url.split('@')[1]}")
 
-# Ajustar URL para SQLAlchemy se necess·rio
+# Ajustar URL para SQLAlchemy se necess√°rio
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
-# ConfiguraÁ„o do SQLAlchemy
+# Configura√ß√£o do SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_pre_ping': True,  # Verificar conex„o antes de usar
-    'pool_recycle': 300,    # Reciclar conexıes a cada 5 minutos
-    'pool_timeout': 30,     # Timeout de 30 segundos para obter conex„o
-    'pool_size': 5,         # Tamanho do pool de conexıes
-    'max_overflow': 10      # M·ximo de conexıes extras
+    'pool_pre_ping': True,  # Verificar conex√£o antes de usar
+    'pool_recycle': 300,    # Reciclar conex√µes a cada 5 minutos
+    'pool_timeout': 30,     # Timeout de 30 segundos para obter conex√£o
+    'pool_size': 5,         # Tamanho do pool de conex√µes
+    'max_overflow': 10      # M√°ximo de conex√µes extras
 }
 
 # Inicializar SQLAlchemy
@@ -59,16 +59,16 @@ class Lead(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
-# FunÁ„o para tentar conectar ao banco de dados com retry
+# Fun√ß√£o para tentar conectar ao banco de dados com retry
 def connect_db_with_retry(max_retries=5, retry_delay=2):
     retries = 0
     while retries < max_retries:
         try:
             logger.info(f"Tentativa {retries + 1} de conectar ao banco de dados...")
             with app.app_context():
-                # Testar conex„o
+                # Testar conex√£o
                 db.session.execute('SELECT 1')
-                logger.info("Conex„o com o banco de dados estabelecida com sucesso!")
+                logger.info("Conex√£o com o banco de dados estabelecida com sucesso!")
                 return True
         except Exception as e:
             retries += 1
@@ -77,7 +77,7 @@ def connect_db_with_retry(max_retries=5, retry_delay=2):
                 logger.info(f"Tentando novamente em {retry_delay} segundos...")
                 time.sleep(retry_delay)
     
-    logger.error(f"N„o foi possÌvel conectar ao banco de dados apÛs {max_retries} tentativas.")
+    logger.error(f"N√£o foi poss√≠vel conectar ao banco de dados ap√≥s {max_retries} tentativas.")
     return False
 
 # Inicializar banco de dados
@@ -93,7 +93,7 @@ def init_db():
             logger.error(f"Erro ao criar tabelas: {str(e)}")
     return False
 
-# Inicializar banco de dados na inicializaÁ„o
+# Inicializar banco de dados na inicializa√ß√£o
 db_initialized = init_db()
 
 @app.route('/')
@@ -109,12 +109,12 @@ def hello():
 @app.route('/health')
 def health():
     try:
-        # Verificar conex„o com o banco de dados
+        # Verificar conex√£o com o banco de dados
         with app.app_context():
             db.session.execute('SELECT 1')
         db_status = "connected"
     except Exception as e:
-        logger.error(f"Erro na verificaÁ„o de sa˙de do banco de dados: {str(e)}")
+        logger.error(f"Erro na verifica√ß√£o de sa√∫de do banco de dados: {str(e)}")
         db_status = f"error: {str(e)}"
     
     return jsonify({
@@ -148,12 +148,12 @@ def create_lead():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "Dados JSON n„o fornecidos"}), 400
+            return jsonify({"error": "Dados JSON n√£o fornecidos"}), 400
         
         required_fields = ['name', 'email']
         for field in required_fields:
             if field not in data:
-                return jsonify({"error": f"Campo obrigatÛrio ausente: {field}"}), 400
+                return jsonify({"error": f"Campo obrigat√≥rio ausente: {field}"}), 400
         
         with app.app_context():
             lead = Lead(name=data['name'], email=data['email'])
@@ -185,9 +185,9 @@ def add_lead(name, email):
 
 @app.route('/debug')
 def debug():
-    """Endpoint para depuraÁ„o"""
+    """Endpoint para depura√ß√£o"""
     try:
-        # Testar conex„o com o banco de dados
+        # Testar conex√£o com o banco de dados
         with app.app_context():
             db_connection_test = "success"
             try:
