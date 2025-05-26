@@ -14,7 +14,7 @@ app = Flask(__name__,
             template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
 app.config['SECRET_KEY'] = 'crm_python_secret_key_2025'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crm.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///crm.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Importar a instância db centralizada
