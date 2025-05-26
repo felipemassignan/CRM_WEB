@@ -137,13 +137,39 @@ def setup_db():
 @app.route('/leads', methods=['GET'])
 def get_leads():
     try:
-        with app.app_context():
-            leads = Lead.query.all()
-            return jsonify([lead.to_dict() for lead in leads])
+        # Filtros
+        name = request.args.get('name')
+        email = request.args.get('email')
+        
+        # Paginação
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+        
+        # Construir query
+        query = Lead.query
+        
+        if name:
+            query = query.filter(Lead.name.ilike(f'%{name}%'))
+        if email:
+            query = query.filter(Lead.email.ilike(f'%{email}%'))
+        
+        # Executar query paginada
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        leads = pagination.items
+        
+        return jsonify({
+            'leads': [lead.to_dict() for lead in leads],
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': pagination.total,
+                'pages': pagination.pages
+            }
+        })
     except Exception as e:
         logger.error(f"Erro ao obter leads: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
+    
 @app.route('/leads', methods=['POST'])
 def create_lead():
     try:
