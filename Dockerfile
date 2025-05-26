@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir Flask==3.1.0 gunicorn==21.2.0 \
 # Copiar código da aplicação
 COPY app.py .
 
-# Criar script de inicialização simplificado
+# Criar script de inicialização simplificado e corrigido
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
