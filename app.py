@@ -4,9 +4,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Usar um diretório com permissões adequadas
-db_path = os.path.join('/tmp', 'app.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+# Usar PostgreSQL ou SQLite como fallback
+database_url = os.getenv('DATABASE_URL', 'sqlite:///tmp/app.db')
+# Ajustar URL para SQLAlchemy se for PostgreSQL
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -28,7 +32,8 @@ class Lead(db.Model):
 
 @app.route('/')
 def hello():
-    return "Hello, Railway! App is running with SQLAlchemy."
+    db_type = "PostgreSQL" if "postgresql" in database_url else "SQLite"
+    return f"Hello, Railway! App is running with {db_type}."
 
 @app.route('/health')
 def health():
@@ -65,13 +70,9 @@ def add_lead(name, email):
 def debug():
     """Endpoint para depuração"""
     info = {
-        "sqlite_path": db_path,
-        "sqlite_dir_exists": os.path.exists(os.path.dirname(db_path)),
-        "sqlite_dir_writable": os.access(os.path.dirname(db_path), os.W_OK),
+        "database_url": database_url.replace(":password@", ":***@") if "@" in database_url else database_url,
         "app_dir": os.getcwd(),
-        "tmp_dir_exists": os.path.exists('/tmp'),
-        "tmp_dir_writable": os.access('/tmp', os.W_OK),
-        "env_vars": {k: v for k, v in os.environ.items() if not k.startswith('_')}
+        "env_vars": {k: v for k, v in os.environ.items() if not k.startswith('_') and "SECRET" not in k and "KEY" not in k and "PASSWORD" not in k}
     }
     return jsonify(info)
 
