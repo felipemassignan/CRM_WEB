@@ -12,7 +12,7 @@ COPY app.py .
 ENV PYTHONUNBUFFERED=1
 
 # Expor a porta
-EXPOSE 5000
+EXPOSE 8080
 
 # Comando para iniciar a aplicação
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --log-level debug app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} --log-level debug app:app"]
