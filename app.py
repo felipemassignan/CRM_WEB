@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text  # Adicione esta importação
 from datetime import datetime
 import time
 
@@ -34,11 +35,11 @@ if database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_pre_ping': True,  # Verificar conexão antes de usar
-    'pool_recycle': 300,    # Reciclar conexões a cada 5 minutos
-    'pool_timeout': 30,     # Timeout de 30 segundos para obter conexão
-    'pool_size': 5,         # Tamanho do pool de conexões
-    'max_overflow': 10      # Máximo de conexões extras
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+    'pool_timeout': 30,
+    'pool_size': 5,
+    'max_overflow': 10
 }
 
 # Inicializar SQLAlchemy
@@ -66,8 +67,8 @@ def connect_db_with_retry(max_retries=5, retry_delay=2):
         try:
             logger.info(f"Tentativa {retries + 1} de conectar ao banco de dados...")
             with app.app_context():
-                # Testar conexão
-                db.session.execute('SELECT 1')
+                # Testar conexão - CORRIGIDO: usando text()
+                db.session.execute(text('SELECT 1'))
                 logger.info("Conexão com o banco de dados estabelecida com sucesso!")
                 return True
         except Exception as e:
@@ -109,9 +110,9 @@ def hello():
 @app.route('/health')
 def health():
     try:
-        # Verificar conexão com o banco de dados
+        # Verificar conexão com o banco de dados - CORRIGIDO: usando text()
         with app.app_context():
-            db.session.execute('SELECT 1')
+            db.session.execute(text('SELECT 1'))
         db_status = "connected"
     except Exception as e:
         logger.error(f"Erro na verificação de saúde do banco de dados: {str(e)}")
@@ -187,11 +188,11 @@ def add_lead(name, email):
 def debug():
     """Endpoint para depuração"""
     try:
-        # Testar conexão com o banco de dados
+        # Testar conexão com o banco de dados - CORRIGIDO: usando text()
         with app.app_context():
             db_connection_test = "success"
             try:
-                db.session.execute('SELECT 1')
+                db.session.execute(text('SELECT 1'))
             except Exception as e:
                 db_connection_test = f"error: {str(e)}"
         
