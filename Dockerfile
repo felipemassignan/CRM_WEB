@@ -31,7 +31,7 @@ fi\n\
 \n\
 # Verificar se o módulo pode ser importado\n\
 echo "Verificando se o módulo pode ser importado..."\n\
-python -c "import app; print("Módulo importado com sucesso!")"\n\
+python -c "import app"\n\
 \n\
 # Definir a porta\n\
 PORT="${PORT:-8080}"\n\
