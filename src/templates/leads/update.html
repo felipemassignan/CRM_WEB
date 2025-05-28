@@ -6,6 +6,7 @@
 <h1>Editar Lead</h1>
 
 <form method="post">
+    {{ csrf_token() }}
     <div class="form-group">
         <label for="name">Nome</label>
         <input type="text" class="form-control" id="name" name="name" value="{{ lead.name }}" required>
@@ -22,7 +23,7 @@
         <label for="industry">Setor</label>
         <select class="form-control" id="industry" name="industry">
             {% for choice in industry_choices %}
-            <option value="{{ choice }}" {% if lead.industry == choice %}selected{% endif %}>{{ choice }}</option>
+            <option value="{{ choice }}" {% if lead.industry= =choice %}selected{% endif %}>{{ choice }}</option>
             {% endfor %}
         </select>
     </div>
