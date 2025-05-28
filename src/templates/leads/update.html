@@ -23,7 +23,7 @@
         <label for="industry">Setor</label>
         <select class="form-control" id="industry" name="industry">
             {% for choice in industry_choices %}
-            <option value="{{ choice }}" {% if lead.industry= =choice %}selected{% endif %}>{{ choice }}</option>
+            <option value="{{ choice }}" {% if lead.industry==choice %}selected{% endif %}>{{ choice }}</option>
             {% endfor %}
         </select>
     </div>
