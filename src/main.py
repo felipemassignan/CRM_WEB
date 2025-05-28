@@ -13,8 +13,18 @@ app = Flask(__name__,
             static_folder=os.path.join(os.path.dirname(__file__), 'static'),
             template_folder=os.path.join(os.path.dirname(__file__), 'templates'))
 
-app.config['SECRET_KEY'] = 'crm_python_secret_key_2025'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crm.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'crm_python_secret_key_2025')
+
+# Configuração dinâmica do banco de dados (PostgreSQL ou SQLite)
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith('postgres://'):
+    # Heroku e algumas plataformas usam postgres://, mas SQLAlchemy precisa de postgresql://
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # Fallback para SQLite
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///crm.db')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Importar a instância db centralizada
