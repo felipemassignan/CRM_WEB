@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.main import src, db
+from src.main import app, db
 from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.template import Template
