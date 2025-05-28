@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Interações{% endblock %}
+
+{% block content %}
+<h1>Interações</h1>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Conteúdo</th>
+            <th>Data</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for interaction in interactions %}
+        <tr>
+            <td>{{ interaction.type }}</td>
+            <td>{{ interaction.content }}</td>
+            <td>{{ interaction.date.strftime('%Y-%m-%d') }}</td>
+            <td>
+                <a href="{{ url_for('interactions.update', id=interaction.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                <form action="{{ url_for('interactions.delete', id=interaction.id) }}" method="post" style="display:inline;">
+                    {{ csrf_token() }}
+                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">Nenhuma interação encontrada.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

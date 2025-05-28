@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Interações Pendentes{% endblock %}
+
+{% block content %}
+<h1>Interações Pendentes</h1>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Tipo</th>
+            <th>Próximo Passo</th>
+            <th>Data do Próximo Passo</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for interaction in interactions %}
+        <tr>
+            <td>{{ interaction.type }}</td>
+            <td>{{ interaction.next_step }}</td>
+            <td>{{ interaction.next_step_date.strftime('%Y-%m-%d') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">Nenhuma interação pendente.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

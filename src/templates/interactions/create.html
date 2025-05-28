@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Interação{% endblock %}
+
+{% block content %}
+<h1>Nova Interação para {{ lead.name }}</h1>
+
+<form method="post">
+    {{ csrf_token() }}
+    <div class="form-group">
+        <label for="type">Tipo</label>
+        <input type="text" class="form-control" id="type" name="type" required>
+    </div>
+    <div class="form-group">
+        <label for="content">Conteúdo</label>
+        <textarea class="form-control" id="content" name="content"></textarea>
+    </div>
+    <!-- Outros campos conforme necessário -->
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+{% endblock %}
