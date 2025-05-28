@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Detalhes do Lead{% endblock %}
+
+{% block content %}
+<h1>Detalhes do Lead</h1>
+
+<ul class="list-group">
+    <li class="list-group-item"><strong>Nome:</strong> {{ lead.name }}</li>
+    <li class="list-group-item"><strong>Cargo:</strong> {{ lead.position }}</li>
+    <li class="list-group-item"><strong>Empresa:</strong> {{ lead.company }}</li>
+    <li class="list-group-item"><strong>Status:</strong> {{ lead.status }}</li>
+    <!-- Adicione mais detalhes conforme necessário -->
+</ul>
+
+<h2>Interações</h2>
+<ul class="list-group">
+    {% for interaction in interactions %}
+    <li class="list-group-item">{{ interaction.content }}</li>
+    {% else %}
+    <li class="list-group-item">Nenhuma interação registrada.</li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-warning">Editar</a>
+<form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-danger">Excluir</button>
+</form>
+<a href="{{ url_for('leads.index') }}" class="btn btn-secondary">Voltar</a>
+{% endblock %}

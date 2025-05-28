@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Leads{% endblock %}
+
+{% block content %}
+<h1>Leads</h1>
+<a href="{{ url_for('leads.create') }}" class="btn btn-primary">Adicionar Lead</a>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Cargo</th>
+            <th>Empresa</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ lead.name }}</td>
+            <td>{{ lead.position }}</td>
+            <td>{{ lead.company }}</td>
+            <td>{{ lead.status }}</td>
+            <td>
+                <a href="{{ url_for('leads.view', id=lead.id) }}" class="btn btn-info btn-sm">Ver</a>
+                <a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                <form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
