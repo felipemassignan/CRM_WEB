@@ -6,6 +6,7 @@ from src.models.reminder import Reminder
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import json
+from src.extensions import db
 
 bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
