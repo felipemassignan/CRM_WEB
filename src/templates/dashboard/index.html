@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Dashboard CRM</h1>
+    
+    <div class="row mt-4">
+        <!-- Gráfico de Leads por Status -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Leads por Status
+                </div>
+                <div class="card-body">
+                    <canvas id="leadsStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráfico de Leads por Setor -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Leads por Setor
+                </div>
+                <div class="card-body">
+                    <canvas id="leadsIndustryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Gráfico de Interações por Tipo -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Interações por Tipo
+                </div>
+                <div class="card-body">
+                    <canvas id="interactionsTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gráfico de Interações por Semana -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Interações por Semana
+                </div>
+                <div class="card-body">
+                    <canvas id="interactionsWeekChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Taxa de Resposta -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Taxa de Resposta
+                </div>
+                <div class="card-body text-center">
+                    <h2>{{ (response_rate * 100)|round(1) }}%</h2>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lembretes para Hoje -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Lembretes para Hoje ({{ reminders_today|length }})
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for reminder in reminders_today %}
+                        <li class="list-group-item">
+                            {{ reminder.title }} - {{ reminder.due_date.strftime('%H:%M') }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item">Nenhum lembrete para hoje</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lembretes Atrasados -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Lembretes Atrasados ({{ overdue_reminders|length }})
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for reminder in overdue_reminders %}
+                        <li class="list-group-item">
+                            {{ reminder.title }} - {{ reminder.due_date.strftime('%d/%m/%Y') }}
+                        </li>
+                        {% else %}
+                        <li class="list-group-item">Nenhum lembrete atrasado</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Dados para os gráficos
+    const leadsStatusData = {{ leads_by_status|safe }};
+    const leadsIndustryData = {{ leads_by_industry|safe }};
+    const interactionsTypeData = {{ interactions_by_type|safe }};
+    const interactionsWeekData = {{ interactions_by_week|safe }};
+    
+    // Gráfico de Leads por Status
+    new Chart(document.getElementById('leadsStatusChart'), {
+        type: 'pie',
+        data: {
+            labels: leadsStatusData.labels,
+            datasets: [{
+                data: leadsStatusData.values,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                ]
+            }]
+        }
+    });
+    
+    // Gráfico de Leads por Setor
+    new Chart(document.getElementById('leadsIndustryChart'), {
+        type: 'bar',
+        data: {
+            labels: leadsIndustryData.labels,
+            datasets: [{
+                label: 'Leads por Setor',
+                data: leadsIndustryData.values,
+                backgroundColor: '#36A2EB'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Gráfico de Interações por Tipo
+    new Chart(document.getElementById('interactionsTypeChart'), {
+        type: 'doughnut',
+        data: {
+            labels: interactionsTypeData.labels,
+            datasets: [{
+                data: interactionsTypeData.values,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
+                ]
+            }]
+        }
+    });
+    
+    // Gráfico de Interações por Semana
+    new Chart(document.getElementById('interactionsWeekChart'), {
+        type: 'line',
+        data: {
+            labels: interactionsWeekData.labels,
+            datasets: [{
+                label: 'Interações',
+                data: interactionsWeekData.values,
+                borderColor: '#4BC0C0',
+                tension: 0.1,
+                fill: false
+            }]
+        }
+    });
+</script>
+{% endblock %}
