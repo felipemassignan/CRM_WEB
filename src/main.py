@@ -6,7 +6,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from flask import Flask, send_from_directory, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_wtf import CSRFProtect  # Importar CSRFProtect
 from datetime import datetime
 
 # Inicialização do app
@@ -19,15 +18,14 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'crm_python_secret_key_2
 # Configuração dinâmica do banco de dados (PostgreSQL ou SQLite)
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
+    # Heroku e algumas plataformas usam postgres://, mas SQLAlchemy precisa de postgresql://
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
+    # Fallback para SQLite
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///crm.db')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Inicializar CSRF
-csrf = CSRFProtect(app)
 
 # Importar a instância db centralizada
 from src.models.db import db
@@ -67,6 +65,10 @@ def index():
 @app.route('/static/<path:path>')
 def serve_static(path):
     return send_from_directory(app.static_folder, path)
+
+# Inicialização do banco de dados
+# Nota: before_first_request foi removido em versões recentes do Flask
+# Usamos with app.app_context() no bloco principal
 
 # Função para carregar dados de teste
 def load_test_data():
