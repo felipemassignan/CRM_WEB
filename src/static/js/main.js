@@ -13,23 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl)
     });
 
-    // Obter o token CSRF do campo oculto
-    const csrfToken = document.getElementById('csrf_token').value;
-
     // Função para gerar mensagem personalizada a partir de template
     window.generateMessage = function(templateId, leadId) {
-        fetch(`/templates/generate/${templateId}/${leadId}`, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => response.text())
-        .then(html => {
-            const modal = new bootstrap.Modal(document.getElementById('messageModal'));
-            document.getElementById('messageModalContent').innerHTML = html;
-            modal.show();
-        })
-        .catch(error => console.error('Erro ao gerar mensagem:', error));
+        fetch(`/templates/generate/${templateId}/${leadId}`)
+            .then(response => response.text())
+            .then(html => {
+                const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+                document.getElementById('messageModalContent').innerHTML = html;
+                modal.show();
+            })
+            .catch(error => console.error('Erro ao gerar mensagem:', error));
     };
 
     // Função para copiar texto para a área de transferência

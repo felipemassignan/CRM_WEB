@@ -3,6 +3,7 @@ from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.template import Template
 from src.models.reminder import Reminder
+from src.models.db import db
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import json

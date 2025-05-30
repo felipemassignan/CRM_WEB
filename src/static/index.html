@@ -17,9 +17,6 @@
 <body>
     <h1>User API Test</h1>
 
-    <!-- Campo oculto para o token CSRF -->
-    <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
-
     <!-- Get All Users -->
     <div class="section">
         <h2>Get All Users (GET /users)</h2>
@@ -71,7 +68,6 @@
 
     <script>
         const API_BASE_URL = '/api/users';
-        const csrfToken = document.getElementById('csrf_token').value;
 
         // Helper function to display results
         function displayResult(elementId, data) {
@@ -108,15 +104,13 @@
             try {
                 const response = await fetch(API_BASE_URL, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
                 displayResult(resultElementId, data);
+                // 清空输入框
                 document.getElementById('create-username').value = '';
                 document.getElementById('create-email').value = '';
             } catch (error) {
@@ -134,7 +128,7 @@
             }
             try {
                 const response = await fetch(`${API_BASE_URL}/${userId}`);
-                if (response.status === 404) throw new Error('User not found');
+                 if (response.status === 404) throw new Error('User not found');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 displayResult(resultElementId, data);
@@ -157,23 +151,21 @@
             if (username) updateData.username = username;
             if (email) updateData.email = email;
             if (Object.keys(updateData).length === 0) {
-                displayError(resultElementId, 'Please enter a username or email to update');
-                return;
+                 displayError(resultElementId, 'Please enter a username or email to update');
+                 return;
             }
 
             try {
                 const response = await fetch(`${API_BASE_URL}/${userId}`, {
                     method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updateData)
                 });
                 if (response.status === 404) throw new Error('User not found');
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
                 displayResult(resultElementId, data);
+                 // Clear input fields
                 document.getElementById('update-username').value = '';
                 document.getElementById('update-email').value = '';
             } catch (error) {
@@ -191,19 +183,19 @@
             }
             try {
                 const response = await fetch(`${API_BASE_URL}/${userId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
+                    method: 'DELETE'
                 });
                 if (response.status === 404) throw new Error('User not found');
-                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`); // Allow 204
+                // 204 No Content indicates success
                 if (response.status === 204) {
-                    displayResult(resultElementId, { message: `User ID ${userId} has been successfully deleted` });
+                     displayResult(resultElementId, { message: `User ID ${userId} has been successfully deleted` });
                 } else {
-                    const data = await response.text();
-                    displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
+                     // Try to read potential error message even on success-like status if not 204
+                     const data = await response.text();
+                     displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
                 }
+                 // Clear input field
                 document.getElementById('delete-user-id').value = '';
             } catch (error) {
                 displayError(resultElementId, error);
