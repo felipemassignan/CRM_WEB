@@ -37,8 +37,8 @@ fi
 # Garantir que o Flask-Migrate está instalado
 pip install flask-migrate
 
-# Verificar se o comando flask está disponível
-which flask || pip install flask
+# Verificar se o módulo Flask está disponível
+python -c "import flask" || pip install flask
 
 # Executar migrações do banco de dados
 echo "Executando migrações do banco de dados..."
