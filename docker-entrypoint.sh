@@ -34,8 +34,8 @@ if [ -n "$DATABASE_URL" ]; then
   >&2 echo "PostgreSQL está disponível - continuando..."
 fi
 
-# Garantir que o Flask-Migrate está instalado
-pip install flask-migrate
+# Instalar dependências Python
+pip install -r requirements.txt
 
 # Verificar se o módulo Flask está disponível
 python -c "import flask" || pip install flask
