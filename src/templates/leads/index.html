@@ -1,38 +1,253 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Leads{% endblock %}
+{% block title %}Leads - CRM Prospecção Industrial{% endblock %}
 
 {% block content %}
-<h1>Leads</h1>
-<a href="{{ url_for('leads.create') }}" class="btn btn-primary">Adicionar Lead</a>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1><i class="bi bi-people"></i> Leads</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('leads.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Lead
+        </a>
+        <a href="{{ url_for('leads.import_leads') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-upload"></i> Importar
+        </a>
+        <button id="exportBtn" class="btn btn-outline-secondary">
+            <i class="bi bi-download"></i> Exportar
+        </button>
+    </div>
+</div>
 
-<table class="table mt-4">
-    <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Cargo</th>
-            <th>Empresa</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for lead in leads %}
-        <tr>
-            <td>{{ lead.name }}</td>
-            <td>{{ lead.position }}</td>
-            <td>{{ lead.company }}</td>
-            <td>{{ lead.status }}</td>
-            <td>
-                <a href="{{ url_for('leads.view', id=lead.id) }}" class="btn btn-info btn-sm">Ver</a>
-                <a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                <form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" style="display:inline;">
-                    {{ csrf_token() }}
-                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-funnel"></i> Filtros
+            <button class="btn btn-sm btn-link float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+        </h5>
+    </div>
+    <div class="collapse show" id="filterCollapse">
+        <div class="card-body">
+            <form action="{{ url_for('leads.filter') }}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">Todos</option>
+                        {% for status in status_choices %}
+                        <option value="{{ status }}" {% if status_filter= =status %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="industry" class="form-label">Setor</label>
+                    <select name="industry" id="industry" class="form-select">
+                        <option value="">Todos</option>
+                        {% for industry in industry_choices %}
+                        <option value="{{ industry }}" {% if industry_filter= =industry %}selected{% endif %}>{{ industry }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="priority" class="form-label">Prioridade</label>
+                    <select name="priority" id="priority" class="form-select">
+                        <option value="">Todas</option>
+                        {% for priority in priority_choices %}
+                        <option value="{{ priority }}" {% if priority_filter= =priority %}selected{% endif %}>{{ priority }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="region" class="form-label">Região</label>
+                    <select name="region" id="region" class="form-select">
+                        <option value="">Todas</option>
+                        {% for region in region_choices %}
+                        <option value="{{ region }}" {% if region_filter= =region %}selected{% endif %}>{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="position" class="form-label">Cargo</label>
+                    <select name="position" id="position" class="form-select">
+                        <option value="">Todos</option>
+                        {% for position in position_choices %}
+                        <option value="{{ position }}" {% if position_filter= =position %}selected{% endif %}>{{ position }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('leads.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Leads -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Empresa</th>
+                        <th>Cargo</th>
+                        <th>Setor</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Última Interação</th>
+                        <th>Próxima Ação</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('leads.view', id=lead.id) }}" class="fw-bold text-decoration-none">
+                                {{ lead.name }}
+                            </a>
+                        </td>
+                        <td>{{ lead.company }}</td>
+                        <td>{{ lead.position }}</td>
+                        <td>{{ lead.industry }}</td>
+                        <td>
+                            <span class="badge
+                                {% if lead.status == 'Novo' %}bg-info
+                                {% elif lead.status == 'Conectado' %}bg-primary
+                                {% elif lead.status == 'Conversando' %}bg-primary
+                                {% elif lead.status == 'Reunião Agendada' %}bg-warning
+                                {% elif lead.status == 'Proposta Enviada' %}bg-warning
+                                {% elif lead.status == 'Negociação' %}bg-warning
+                                {% elif lead.status == 'Cliente' %}bg-success
+                                {% elif lead.status == 'Perdido' %}bg-danger
+                                {% elif lead.status == 'Em Pausa' %}bg-secondary
+                                {% else %}bg-secondary{% endif %}">
+                                {{ lead.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if lead.priority == 'Alta' %}bg-danger
+                                {% elif lead.priority == 'Média' %}bg-warning
+                                {% elif lead.priority == 'Baixa' %}bg-success
+                                {% else %}bg-secondary{% endif %}">
+                                {{ lead.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if lead.last_interaction_date %}
+                            {{ lead.last_interaction_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                            <span class="text-muted">Nenhuma</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lead.next_action_date %}
+                            <small class="d-block text-muted">{{ lead.next_action_date.strftime('%d/%m/%Y') }}</small>
+                            {{ lead.next_action }}
+                            {% else %}
+                            <span class="text-muted">Nenhuma</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Ações
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('leads.view', id=lead.id) }}">
+                                            <i class="bi bi-eye"></i> Visualizar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('leads.update', id=lead.id) }}">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('interactions.create', lead_id=lead.id) }}">
+                                            <i class="bi bi-chat-dots"></i> Nova Interação
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('reminders.create', lead_id=lead.id) }}">
+                                            <i class="bi bi-bell"></i> Novo Lembrete
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" class="d-inline delete-form">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash"></i> Excluir
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                                Nenhum lead encontrado.
+                                <a href="{{ url_for('leads.create') }}" class="btn btn-sm btn-primary ms-2">
+                                    <i class="bi bi-plus-circle"></i> Adicionar Lead
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Confirmação de exclusão
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Tem certeza que deseja excluir este lead? Esta ação não pode ser desfeita.')) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Exportação de leads
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        fetch('{{ url_for("leads.export_leads") }}')
+            .then(response => response.json())
+            .then(data => {
+                const csvContent = data.csv_data;
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'leads_export_' + new Date().toISOString().slice(0,10) + '.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(error => {
+                console.error('Erro ao exportar leads:', error);
+                alert('Erro ao exportar leads. Por favor, tente novamente.');
+            });
+    });
+</script>
 {% endblock %}

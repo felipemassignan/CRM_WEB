@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Criar Template - CRM Prospecção Industrial{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-file-earmark-plus"></i> Criar Novo Template</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('templates.index') }}">Templates</a></li>
+                <li class="breadcrumb-item active">Criar Novo</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoria <span class="text-danger">*</span></label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Selecione...</option>
+                            <option value="Primeiro Contato">Primeiro Contato</option>
+                            <option value="Follow-up">Follow-up</option>
+                            <option value="Reunião">Reunião</option>
+                            <option value="Proposta">Proposta</option>
+                            <option value="Agradecimento">Agradecimento</option>
+                            <option value="Reativação">Reativação</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="target_position" class="form-label">Cargo Alvo</label>
+                        <select class="form-select" id="target_position" name="target_position">
+                            <option value="">Todos</option>
+                            <option value="CEO">CEO</option>
+                            <option value="COO">COO</option>
+                            <option value="CTO">CTO</option>
+                            <option value="CFO">CFO</option>
+                            <option value="Diretor Industrial">Diretor Industrial</option>
+                            <option value="Diretor de Operações">Diretor de Operações</option>
+                            <option value="Diretor de Produção">Diretor de Produção</option>
+                            <option value="Diretor de Qualidade">Diretor de Qualidade</option>
+                            <option value="Gerente Industrial">Gerente Industrial</option>
+                            <option value="Gerente de Produção">Gerente de Produção</option>
+                            <option value="Gerente de Qualidade">Gerente de Qualidade</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="subject" class="form-label">Assunto</label>
+                <input type="text" class="form-control" id="subject" name="subject">
+                <div class="form-text">Assunto do email ou título da mensagem.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">Conteúdo <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+                <div class="form-text">
+                    Use variáveis como {nome}, {primeiro_nome}, {cargo}, {empresa}, {setor}, {data} para personalização.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="variables" class="form-label">Variáveis Disponíveis</label>
+                <input type="text" class="form-control" id="variables" name="variables" value="{nome}, {primeiro_nome}, {cargo}, {empresa}, {setor}, {data}">
+                <div class="form-text">Lista de variáveis que podem ser usadas neste template.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="usage_notes" class="form-label">Notas de Uso</label>
+                <textarea class="form-control" id="usage_notes" name="usage_notes" rows="3"></textarea>
+                <div class="form-text">Instruções ou dicas para o uso eficaz deste template.</div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <a href="{{ url_for('templates.index') }}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar Template</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Adicionar variáveis ao conteúdo
+    document.addEventListener('DOMContentLoaded', function() {
+        const variableButtons = [
+            {name: 'Nome', value: '{nome}'},
+            {name: 'Primeiro Nome', value: '{primeiro_nome}'},
+            {name: 'Cargo', value: '{cargo}'},
+            {name: 'Empresa', value: '{empresa}'},
+            {name: 'Setor', value: '{setor}'},
+            {name: 'Data', value: '{data}'}
+        ];
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'mb-2';
+
+        variableButtons.forEach(variable => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-sm btn-outline-secondary me-1 mb-1';
+            button.textContent = variable.name;
+            button.addEventListener('click', function() {
+                const contentTextarea = document.getElementById('content');
+                const cursorPos = contentTextarea.selectionStart;
+                const textBefore = contentTextarea.value.substring(0, cursorPos);
+                const textAfter = contentTextarea.value.substring(cursorPos);
+                contentTextarea.value = textBefore + variable.value + textAfter;
+                contentTextarea.focus();
+                contentTextarea.selectionStart = cursorPos + variable.value.length;
+                contentTextarea.selectionEnd = cursorPos + variable.value.length;
+            });
+            buttonContainer.appendChild(button);
+        });
+
+        const contentLabel = document.querySelector('label[for="content"]');
+        contentLabel.parentNode.insertBefore(buttonContainer, document.getElementById('content'));
+    });
+</script>
+{% endblock %}

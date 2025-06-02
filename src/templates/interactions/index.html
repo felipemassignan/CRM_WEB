@@ -1,37 +1,179 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Interações{% endblock %}
+{% block title %}Interações - CRM Prospecção Industrial{% endblock %}
 
 {% block content %}
-<h1>Interações</h1>
-<table class="table mt-4">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Conteúdo</th>
-            <th>Data</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for interaction in interactions %}
-        <tr>
-            <td>{{ interaction.type }}</td>
-            <td>{{ interaction.content }}</td>
-            <td>{{ interaction.date.strftime('%Y-%m-%d') }}</td>
-            <td>
-                <a href="{{ url_for('interactions.update', id=interaction.id) }}" class="btn btn-warning btn-sm">Editar</a>
-                <form action="{{ url_for('interactions.delete', id=interaction.id) }}" method="post" style="display:inline;">
-                    {{ csrf_token() }}
-                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="4">Nenhuma interação encontrada.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1><i class="bi bi-chat-dots"></i> Interações</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('interactions.pending') }}" class="btn btn-outline-primary">
+            <i class="bi bi-clock-history"></i> Pendentes
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-funnel"></i> Filtros
+            <button class="btn btn-sm btn-link float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+        </h5>
+    </div>
+    <div class="collapse show" id="filterCollapse">
+        <div class="card-body">
+            <form action="{{ url_for('interactions.index') }}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Tipo</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="Email">Email</option>
+                        <option value="Ligação">Ligação</option>
+                        <option value="Reunião">Reunião</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="date_from" class="form-label">Data Inicial</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="date_to" class="form-label">Data Final</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="response" class="form-label">Resposta</label>
+                    <select name="response" id="response" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="1">Com resposta</option>
+                        <option value="0">Sem resposta</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="has_next_step" class="form-label">Próximo Passo</label>
+                    <select name="has_next_step" id="has_next_step" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="1">Com próximo passo</option>
+                        <option value="0">Sem próximo passo</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('interactions.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Interações -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Lead</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Conteúdo</th>
+                        <th>Resposta</th>
+                        <th>Próximo Passo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interaction in interactions %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('leads.view', id=interaction.lead_id) }}" class="fw-bold text-decoration-none">
+                                {{ interaction.lead.name }}
+                            </a>
+                            <small class="d-block text-muted">{{ interaction.lead.company }}</small>
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if interaction.type == 'Email' %}bg-info
+                                {% elif interaction.type == 'Ligação' %}bg-success
+                                {% elif interaction.type == 'Reunião' %}bg-primary
+                                {% elif interaction.type == 'LinkedIn' %}bg-secondary
+                                {% else %}bg-dark{% endif %}">
+                                {{ interaction.type }}
+                            </span>
+                        </td>
+                        <td>{{ interaction.date.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <div class="text-truncate" style="max-width: 200px;">
+                                {{ interaction.content }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if interaction.response %}
+                            <span class="badge bg-success">Sim</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if interaction.next_step %}
+                            <div class="text-truncate" style="max-width: 150px;">
+                                {{ interaction.next_step }}
+                                <small class="d-block text-muted">
+                                    {{ interaction.next_step_date.strftime('%d/%m/%Y') if interaction.next_step_date }}
+                                </small>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('interactions.update', id=interaction.id) }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('interactions.delete', id=interaction.id) }}" method="post" class="d-inline delete-form">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                                Nenhuma interação encontrada.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Confirmação de exclusão
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            if (!confirm('Tem certeza que deseja excluir esta interação? Esta ação não pode ser desfeita.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
 {% endblock %}

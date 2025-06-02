@@ -1,31 +1,321 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Detalhes do Lead{% endblock %}
+{% block title %}Visualizar Lead - CRM Prospecção Industrial{% endblock %}
 
 {% block content %}
-<h1>Detalhes do Lead</h1>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>
+            <i class="bi bi-person"></i> {{ lead.name }}
+            <span class="badge
+                {% if lead.status == 'Novo' %}bg-info
+                {% elif lead.status == 'Conectado' %}bg-primary
+                {% elif lead.status == 'Conversando' %}bg-primary
+                {% elif lead.status == 'Reunião Agendada' %}bg-warning
+                {% elif lead.status == 'Proposta Enviada' %}bg-warning
+                {% elif lead.status == 'Negociação' %}bg-warning
+                {% elif lead.status == 'Cliente' %}bg-success
+                {% elif lead.status == 'Perdido' %}bg-danger
+                {% elif lead.status == 'Em Pausa' %}bg-secondary
+                {% else %}bg-secondary{% endif %}">
+                {{ lead.status }}
+            </span>
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('leads.index') }}">Leads</a></li>
+                <li class="breadcrumb-item active">{{ lead.name }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group">
+            <a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-outline-primary">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{{ url_for('interactions.create', lead_id=lead.id) }}" class="btn btn-primary">
+                <i class="bi bi-chat-dots"></i> Nova Interação
+            </a>
+            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                <span class="visually-hidden">Mais ações</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('reminders.create', lead_id=lead.id) }}">
+                        <i class="bi bi-bell"></i> Novo Lembrete
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('integrations.send_email', lead_id=lead.id) }}">
+                        <i class="bi bi-envelope"></i> Enviar Email
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" class="d-inline delete-form">
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="bi bi-trash"></i> Excluir Lead
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-<ul class="list-group">
-    <li class="list-group-item"><strong>Nome:</strong> {{ lead.name }}</li>
-    <li class="list-group-item"><strong>Cargo:</strong> {{ lead.position }}</li>
-    <li class="list-group-item"><strong>Empresa:</strong> {{ lead.company }}</li>
-    <li class="list-group-item"><strong>Status:</strong> {{ lead.status }}</li>
-    <!-- Adicione mais detalhes conforme necessário -->
-</ul>
+<div class="row">
+    <!-- Coluna de informações do lead -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Informações Básicas</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Empresa</small>
+                    <strong>{{ lead.company or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Cargo</small>
+                    <strong>{{ lead.position or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Setor</small>
+                    <strong>{{ lead.industry or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Prioridade</small>
+                    <span class="badge
+                        {% if lead.priority == 'Alta' %}bg-danger
+                        {% elif lead.priority == 'Média' %}bg-warning
+                        {% elif lead.priority == 'Baixa' %}bg-success
+                        {% else %}bg-secondary{% endif %}">
+                        {{ lead.priority }}
+                    </span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Origem</small>
+                    <strong>{{ lead.source or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">Adicionado em</small>
+                    <strong>{{ lead.added_date.strftime('%d/%m/%Y') if lead.added_date else 'Não informado' }}</strong>
+                </div>
+            </div>
+        </div>
 
-<h2>Interações</h2>
-<ul class="list-group">
-    {% for interaction in interactions %}
-    <li class="list-group-item">{{ interaction.content }}</li>
-    {% else %}
-    <li class="list-group-item">Nenhuma interação registrada.</li>
-    {% endfor %}
-</ul>
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-telephone"></i> Contato</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Email</small>
+                    {% if lead.email %}
+                    <a href="mailto:{{ lead.email }}">{{ lead.email }}</a>
+                    {% else %}
+                    <span class="text-muted">Não informado</span>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Telefone</small>
+                    {% if lead.phone %}
+                    <a href="tel:{{ lead.phone }}">{{ lead.phone }}</a>
+                    {% else %}
+                    <span class="text-muted">Não informado</span>
+                    {% endif %}
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">LinkedIn</small>
+                    {% if lead.linkedin_url %}
+                    <a href="{{ lead.linkedin_url }}" target="_blank">Ver perfil <i class="bi bi-box-arrow-up-right"></i></a>
+                    {% else %}
+                    <span class="text-muted">Não informado</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-<a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-warning">Editar</a>
-<form action="{{ url_for('leads.delete', id=lead.id) }}" method="post" style="display:inline;">
-    {{ csrf_token() }}
-    <button type="submit" class="btn btn-danger">Excluir</button>
-</form>
-<a href="{{ url_for('leads.index') }}" class="btn btn-secondary">Voltar</a>
-{% endblock %}
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Localização</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Região</small>
+                    <strong>{{ lead.region or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Estado</small>
+                    <strong>{{ lead.state or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">Cidade</small>
+                    <strong>{{ lead.city or 'Não informado' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-building"></i> Informações da Empresa</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Tamanho da Empresa</small>
+                    <strong>{{ lead.company_size or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Faturamento Anual</small>
+                    <strong>{{ lead.annual_revenue or 'Não informado' }}</strong>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">Tecnologias Utilizadas</small>
+                    <strong>{{ lead.technologies_used or 'Não informado' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-sticky"></i> Notas</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Pontos de Dor</small>
+                    <p class="mb-0">{{ lead.pain_points or 'Não informado' }}</p>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted d-block">Observações</small>
+                    <p class="mb-0">{{ lead.notes or 'Não informado' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coluna de interações e próximas ações -->
+    <div class="col-md-8">
+        <!-- Próxima ação -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-arrow-right-circle"></i> Próxima Ação</h5>
+            </div>
+            <div class="card-body">
+                {% if lead.next_action and lead.next_action_date %}
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-1">{{ lead.next_action }}</h5>
+                        <p class="mb-0 text-muted">
+                            <i class="bi bi-calendar"></i> {{ lead.next_action_date.strftime('%d/%m/%Y') }}
+                            {% if lead.next_action_date.date() < now.date() %}
+                            <span class="badge bg-danger ms-2">Atrasado</span>
+                            {% elif lead.next_action_date.date() == now.date() %}
+                            <span class="badge bg-warning ms-2">Hoje</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Atualizar
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-calendar-plus fs-1 text-muted mb-2 d-block"></i>
+                    <p class="mb-3">Nenhuma ação agendada para este lead.</p>
+                    <a href="{{ url_for('leads.update', id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> Adicionar Próxima Ação
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Lembretes -->
+        <div class="card mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-bell"></i> Lembretes</h5>
+                <a href="{{ url_for('reminders.create', lead_id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-circle"></i> Novo Lembrete
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for reminder in lead.reminders %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 {% if reminder.is_completed %}text-decoration-line-through text-muted{% endif %}">
+                                    {{ reminder.title }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ reminder.due_date.strftime('%d/%m/%Y') }}
+                                    {% if reminder.is_completed %}
+                                    <span class="badge bg-success ms-2">Concluído</span>
+                                    {% elif reminder.due_date.date() < now.date() %}
+                                    <span class="badge bg-danger ms-2">Atrasado</span>
+                                    {% elif reminder.due_date.date() == now.date() %}
+                                    <span class="badge bg-warning ms-2">Hoje</span>
+                                    {% endif %}
+                                </small>
+                                {% if reminder.description %}
+                                <p class="mb-0 small {% if reminder.is_completed %}text-muted{% endif %}">{{ reminder.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                {% if not reminder.is_completed %}
+                                <form action="{{ url_for('reminders.complete', id=reminder.id) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <a href="{{ url_for('reminders.update', id=reminder.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ url_for('reminders.delete', id=reminder.id) }}" method="post" class="d-inline delete-reminder-form">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-bell-slash fs-1 text-muted mb-2 d-block"></i>
+                        <p class="mb-3">Nenhum lembrete para este lead.</p>
+                        <a href="{{ url_for('reminders.create', lead_id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-plus-circle"></i> Adicionar Lembrete
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Interações -->
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Histórico de Interações</h5>
+                <a href="{{ url_for('interactions.create', lead_id=lead.id) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nova Interação
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for interaction in interactions %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between mb-2">
+                            <h6 class="mb-0">
+                                <span class="badge
+                                    {% if interaction.type == 'Email' %}bg-info
+                                    {% elif interaction.type == 'Ligação' %}bg-success
+                                    {% elif interaction.type == 'Reunião' %}bg-primary
+                                    {% elif interaction.type == 'LinkedIn' %}bg-secondary
+                                    {% else %}bg-dark{% endif %} me-2">
+                                    {{ interaction.type }}
+                                </span>
+
+                                (Content truncated due to size limit. Use line ranges to read in chunks)

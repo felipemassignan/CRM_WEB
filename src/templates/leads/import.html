@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Importar Leads - CRM Prospecção Industrial{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-upload"></i> Importar Leads</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('leads.index') }}">Leads</a></li>
+                <li class="breadcrumb-item active">Importar</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-file-earmark-spreadsheet"></i> Upload de Arquivo CSV</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="file" class="form-label">Selecione o arquivo CSV</label>
+                        <input class="form-control" type="file" id="file" name="file" accept=".csv">
+                        <div class="form-text">O arquivo deve estar no formato CSV com cabeçalhos.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('leads.index') }}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Importar Leads</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Instruções</h5>
+            </div>
+            <div class="card-body">
+                <p>Para importar leads, siga estas instruções:</p>
+                <ol>
+                    <li>Prepare um arquivo CSV com os cabeçalhos corretos</li>
+                    <li>Selecione o arquivo usando o botão "Escolher arquivo"</li>
+                    <li>Clique em "Importar Leads"</li>
+                </ol>
+                <p>Os seguintes campos são suportados:</p>
+                <ul class="small">
+                    <li><strong>name</strong> (obrigatório): Nome do contato</li>
+                    <li><strong>position</strong>: Cargo</li>
+                    <li><strong>company</strong>: Empresa</li>
+                    <li><strong>industry</strong>: Setor</li>
+                    <li><strong>linkedin_url</strong>: URL do LinkedIn</li>
+                    <li><strong>email</strong>: Email</li>
+                    <li><strong>phone</strong>: Telefone</li>
+                    <li><strong>region</strong>: Região</li>
+                    <li><strong>state</strong>: Estado</li>
+                    <li><strong>city</strong>: Cidade</li>
+                    <li><strong>status</strong>: Status</li>
+                    <li><strong>source</strong>: Origem</li>
+                    <li><strong>priority</strong>: Prioridade</li>
+                    <li><strong>company_size</strong>: Tamanho da empresa</li>
+                    <li><strong>annual_revenue</strong>: Faturamento anual</li>
+                    <li><strong>technologies_used</strong>: Tecnologias utilizadas</li>
+                    <li><strong>pain_points</strong>: Pontos de dor</li>
+                    <li><strong>notes</strong>: Observações</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-download"></i> Modelo de CSV</h5>
+            </div>
+            <div class="card-body">
+                <p>Baixe um modelo de CSV para facilitar a importação:</p>
+                <a href="#" id="downloadTemplate" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-download"></i> Baixar Modelo CSV
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('downloadTemplate').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Cabeçalhos do CSV
+        const headers = [
+            'name', 'position', 'company', 'industry', 'linkedin_url',
+            'email', 'phone', 'region', 'state', 'city',
+            'status', 'source', 'priority', 'company_size',
+            'annual_revenue', 'technologies_used', 'pain_points', 'notes'
+        ];
+
+        // Exemplo de linha
+        const exampleRow = [
+            'João Silva', 'Diretor Industrial', 'Indústria Exemplo', 'Manufatura Geral', 'https://linkedin.com/in/joaosilva',
+            'joao.silva@exemplo.com', '(11) 98765-4321', 'Sudeste', 'São Paulo', 'São Paulo',
+            'Novo', 'LinkedIn', 'Média', '51-200',
+            'R$ 10-50 milhões', 'Automação, Robótica', 'Dificuldade em encontrar mão de obra qualificada', 'Contato inicial feito via LinkedIn'
+        ];
+
+        // Criar conteúdo CSV
+        let csvContent = headers.join(',') + '\n' + exampleRow.join(',');
+
+        // Criar blob e link para download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'modelo_importacao_leads.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+</script>
+{% endblock %}

@@ -1,21 +1,95 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Nova Interação{% endblock %}
+{% block title %}Registrar Interação - CRM Prospecção Industrial{% endblock %}
 
 {% block content %}
-<h1>Nova Interação para {{ lead.name }}</h1>
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-chat-dots"></i> Registrar Interação</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('leads.index') }}">Leads</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('leads.view', id=lead.id) }}">{{ lead.name }}</a></li>
+                <li class="breadcrumb-item active">Nova Interação</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-<form method="post">
-    {{ csrf_token() }}
-    <div class="form-group">
-        <label for="type">Tipo</label>
-        <input type="text" class="form-control" id="type" name="type" required>
+<div class="card">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">Detalhes da Interação com {{ lead.name }}</h5>
     </div>
-    <div class="form-group">
-        <label for="content">Conteúdo</label>
-        <textarea class="form-control" id="content" name="content"></textarea>
+    <div class="card-body">
+        <form method="post">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="type" class="form-label">Tipo de Interação <span class="text-danger">*</span></label>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="">Selecione...</option>
+                            <option value="Email">Email</option>
+                            <option value="Ligação">Ligação</option>
+                            <option value="Reunião">Reunião</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Resposta Recebida?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="response" name="response">
+                            <label class="form-check-label" for="response">
+                                Sim, recebi resposta
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">Conteúdo da Interação <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                <div class="form-text">Descreva o que foi comunicado, discutido ou enviado.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="result" class="form-label">Resultado</label>
+                <textarea class="form-control" id="result" name="result" rows="3"></textarea>
+                <div class="form-text">Descreva o resultado ou feedback obtido nesta interação.</div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <h5 class="card-title">Próximo Passo</h5>
+                </div>
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label for="next_step" class="form-label">Descrição do Próximo Passo</label>
+                        <input type="text" class="form-control" id="next_step" name="next_step">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="next_step_date" class="form-label">Data do Próximo Passo</label>
+                        <input type="date" class="form-control" id="next_step_date" name="next_step_date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label">Observações Adicionais</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                <div class="form-text">Informações adicionais relevantes para esta interação.</div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <a href="{{ url_for('leads.view', id=lead.id) }}" class="btn btn-outline-secondary me-2">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Registrar Interação</button>
+            </div>
+        </form>
     </div>
-    <!-- Outros campos conforme necessário -->
-    <button type="submit" class="btn btn-primary">Salvar</button>
-</form>
+</div>
 {% endblock %}

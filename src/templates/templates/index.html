@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Templates de Mensagem - CRM Prospecção Industrial{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1><i class="bi bi-file-text"></i> Templates de Mensagem</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('templates.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Template
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="mb-0">
+            <i class="bi bi-funnel"></i> Filtros
+            <button class="btn btn-sm btn-link float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+        </h5>
+    </div>
+    <div class="collapse show" id="filterCollapse">
+        <div class="card-body">
+            <form action="{{ url_for('templates.filter') }}" method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="category" class="form-label">Categoria</label>
+                    <select name="category" id="category" class="form-select">
+                        <option value="">Todas</option>
+                        <option value="Primeiro Contato" {% if category_filter= ='Primeiro Contato' %}selected{% endif %}>Primeiro Contato</option>
+                        <option value="Follow-up" {% if category_filter= ='Follow-up' %}selected{% endif %}>Follow-up</option>
+                        <option value="Reunião" {% if category_filter= ='Reunião' %}selected{% endif %}>Reunião</option>
+                        <option value="Proposta" {% if category_filter= ='Proposta' %}selected{% endif %}>Proposta</option>
+                        <option value="Agradecimento" {% if category_filter= ='Agradecimento' %}selected{% endif %}>Agradecimento</option>
+                        <option value="Reativação" {% if category_filter= ='Reativação' %}selected{% endif %}>Reativação</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="target_position" class="form-label">Cargo Alvo</label>
+                    <select name="target_position" id="target_position" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="CEO" {% if position_filter= ='CEO' %}selected{% endif %}>CEO</option>
+                        <option value="COO" {% if position_filter= ='COO' %}selected{% endif %}>COO</option>
+                        <option value="CTO" {% if position_filter= ='CTO' %}selected{% endif %}>CTO</option>
+                        <option value="Diretor Industrial" {% if position_filter= ='Diretor Industrial' %}selected{% endif %}>Diretor Industrial</option>
+                        <option value="Gerente de Produção" {% if position_filter= ='Gerente de Produção' %}selected{% endif %}>Gerente de Produção</option>
+                        <option value="Gerente de Qualidade" {% if position_filter= ='Gerente de Qualidade' %}selected{% endif %}>Gerente de Qualidade</option>
+                    </select>
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('templates.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Templates -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Assunto</th>
+                        <th>Cargo Alvo</th>
+                        <th>Uso</th>
+                        <th>Última Utilização</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for template in templates %}
+                    <tr>
+                        <td>
+                            <span class="badge
+                                {% if template.category == 'Primeiro Contato' %}bg-primary
+                                {% elif template.category == 'Follow-up' %}bg-info
+                                {% elif template.category == 'Reunião' %}bg-success
+                                {% elif template.category == 'Proposta' %}bg-warning
+                                {% elif template.category == 'Agradecimento' %}bg-secondary
+                                {% elif template.category == 'Reativação' %}bg-danger
+                                {% else %}bg-dark{% endif %}">
+                                {{ template.category }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('templates.view', id=template.id) }}" class="fw-bold text-decoration-none">
+                                {{ template.subject or 'Sem assunto' }}
+                            </a>
+                        </td>
+                        <td>{{ template.target_position or 'Todos' }}</td>
+                        <td>{{ template.usage_count }} vezes</td>
+                        <td>
+                            {% if template.last_used %}
+                            {{ template.last_used.strftime('%d/%m/%Y') }}
+                            {% else %}
+                            <span class="text-muted">Nunca</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Ações
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('templates.view', id=template.id) }}">
+                                            <i class="bi bi-eye"></i> Visualizar
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('templates.update', id=template.id) }}">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ url_for('templates.delete', id=template.id) }}" method="post" class="d-inline delete-form">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash"></i> Excluir
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+                                Nenhum template encontrado.
+                                <a href="{{ url_for('templates.create') }}" class="btn btn-sm btn-primary ms-2">
+                                    <i class="bi bi-plus-circle"></i> Adicionar Template
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Confirmação de exclusão
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            if (!confirm('Tem certeza que deseja excluir este template? Esta ação não pode ser desfeita.')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}
