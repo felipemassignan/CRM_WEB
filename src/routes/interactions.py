@@ -136,4 +136,4 @@ def pending():
     interactions = Interaction.query.filter(Interaction.next_step != None, 
                                           Interaction.next_step != '').order_by(Interaction.next_step_date).all()
     
-    return render_template('interactions/pending.html', interactions=interactions)
+    return render_template('interactions/pending.html', interactions=interactions, now=datetime.utcnow())

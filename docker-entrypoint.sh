@@ -44,11 +44,11 @@ fi
 echo "Aguardando o banco de dados..."
 sleep 5
 
-# Garantir que o Flask-Migrate está instalado
-pip install flask-migrate
-
 # Instalar dependências Python
 pip install -r requirements.txt
+
+# Garantir que o Flask-Migrate está instalado (se já estiver em requirements.txt, esta linha é redundante mas inofensiva)
+pip install flask-migrate
 
 # Verificar se o módulo Flask está disponível
 python -c "import flask" || pip install flask

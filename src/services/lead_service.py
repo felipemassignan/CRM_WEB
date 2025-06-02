@@ -14,7 +14,16 @@ class LeadService:
             phone=data.get('phone'),
             linkedin_url=data.get('linkedin_url'),
             status=data.get('status', 'Novo'),
-            source=data.get('source', 'API'),
+            source=data.get('source', 'API'),            
+            region=data.get('region'),  # Novo campo
+            state=data.get('state'),    # Novo campo
+            city=data.get('city'),      # Novo campo
+            priority=data.get('priority'), # Novo campo
+            company_size=data.get('company_size'), # Novo campo
+            annual_revenue=data.get('annual_revenue'), # Novo campo
+            technologies_used=data.get('technologies_used'), # Novo campo
+            pain_points=data.get('pain_points'), # Novo campo
+            notes=data.get('notes'), # Novo campo
             created_at=datetime.utcnow()
         )
         db.session.add(new_lead)

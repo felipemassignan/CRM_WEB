@@ -1,5 +1,6 @@
 # src/schemas/api_schemas.py
 from marshmallow import Schema, fields, validate, ValidationError
+from src.models.lead import Lead
 
 class UserSchema(Schema):
     username = fields.String(required=True, validate=validate.Length(min=3, max=80))
@@ -16,12 +17,11 @@ class LeadSchema(Schema):
     email = fields.Email(allow_none=True)
     phone = fields.String(validate=validate.Length(max=20), allow_none=True)
     linkedin_url = fields.URL(validate=validate.Length(max=255), allow_none=True)
-    status = fields.String(validate=validate.OneOf([
-        'Novo', 'Contatado', 'Qualificado', 'Proposta', 'Negociação', 'Fechado', 'Perdido'
-    ]), default='Novo')
+    status = fields.String(validate=OneOf([choice[0] for choice in Lead.STATUS_CHOICES]))
     source = fields.String(validate=validate.Length(max=100), allow_none=True)
     notes = fields.String(validate=validate.Length(max=1000), allow_none=True)
     created_at = fields.DateTime(dump_only=True)
+    
 
 class InteractionSchema(Schema):
     id = fields.Integer(dump_only=True)

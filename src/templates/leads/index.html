@@ -229,16 +229,15 @@
     });
 
     // Exportação de leads
-    document.getElementById('exportBtn').addEventListener('click', function() {
-        fetch('{{ url_for("leads.export_leads") }}')
-            .then(response => response.json())
-            .then(data => {
-                const csvContent = data.csv_data;
+    document.getElementById('exportBtn').addEventListener('click', function () {
+        fetch('{{ url_for("integrations.export_data") }}')
+            .then(response => response.text()) // Mude para .text()
+            .then(csvContent => { // Receba o texto CSV diretamente
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.setAttribute('href', url);
-                link.setAttribute('download', 'leads_export_' + new Date().toISOString().slice(0,10) + '.csv');
+                link.setAttribute('download', 'leads_export_' + new Date().toISOString().slice(0, 10) + '.csv');
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();

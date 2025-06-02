@@ -103,4 +103,5 @@ def index():
                          industry_labels=industry_labels,
                          industry_data=industry_counts,
                          week_labels=week_labels,
-                         week_data=week_data)
+                         week_data=week_data,
+                         now=datetime.now(pytz.UTC)) 

@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.main import src, db
+from src.main import create_app, db
 from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.template import Template
@@ -217,6 +217,7 @@ def gerar_telefone():
 
 def criar_dados_teste():
     """Cria dados de teste no banco de dados."""
+    app = create_app() 
     with app.app_context():
         # Criar usuário de teste
         if not User.query.filter_by(username="admin").first():

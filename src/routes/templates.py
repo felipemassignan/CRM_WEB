@@ -11,7 +11,9 @@ bp = Blueprint('templates', __name__, url_prefix='/templates')
 def index():
     """Lista todos os templates de mensagem."""
     templates = Template.query.order_by(Template.category).all()
-    return render_template('templates/index.html', templates=templates)
+    return render_template('templates/index.html', templates=templates,
+                           category_filter=request.args.get('category'),
+                           position_filter=request.args.get('target_position'))
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
