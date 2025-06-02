@@ -9,15 +9,15 @@ def init_db():
     app = create_app()
     
     with app.app_context():
-        # Criar tabelas se não existirem
+        # Criar tabelas se nÃ£o existirem
         db.create_all()
         
-        # Verificar se já existe um usuário admin
+        # Verificar se jÃ¡ existe um usuÃ¡rio admin
         admin = User.query.filter_by(username='admin').first()
         
         if not admin:
-            # Criar usuário admin
-            admin_password = os.environ.get('ADMIN_INITIAL_PASSWORD', 'admin123')  # Usar variável de ambiente ou senha padrão
+            # Criar usuÃ¡rio admin
+            admin_password = os.environ.get('ADMIN_INITIAL_PASSWORD', 'admin123')  # Usar variÃ¡vel de ambiente ou senha padrÃ£o
             admin = User(
                 username='admin',
                 email='admin@example.com',
@@ -28,10 +28,10 @@ def init_db():
             db.session.add(admin)
             db.session.commit()
             
-            print(f"Usuário admin criado com sucesso. Senha: {admin_password}")
-            print("IMPORTANTE: Altere esta senha após o primeiro login!")
+            print(f"UsuÃ¡rio admin criado com sucesso. Senha: {admin_password}")
+            print("IMPORTANTE: Altere esta senha apÃ³s o primeiro login!")
         else:
-            print("Usuário admin já existe.")
+            print("UsuÃ¡rio admin jÃ¡ existe.")
 
 if __name__ == '__main__':
     init_db()

@@ -7,7 +7,7 @@ class Interaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lead_id = db.Column(db.Integer, db.ForeignKey('leads.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    type = db.Column(db.String(50), nullable=False)  # Conexão LinkedIn, Mensagem, Email, etc.
+    type = db.Column(db.String(50), nullable=False)  # ConexÃ£o LinkedIn, Mensagem, Email, etc.
     content = db.Column(db.Text)
     response = db.Column(db.Boolean, default=False)
     next_step = db.Column(db.String(255))

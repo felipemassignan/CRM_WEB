@@ -13,5 +13,5 @@ class ApiToken(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_used_at = db.Column(db.DateTime, nullable=True)
     
-    # Relacionamento com o usu·rio
+    # Relacionamento com o usu√°rio
     user = db.relationship('User', backref=db.backref('api_tokens', lazy=True))

@@ -7,8 +7,8 @@ from flask import current_app
 class EmailSender:
     def __init__(self, smtp_server=None, smtp_port=None, smtp_user=None, smtp_password=None):
         """
-        Inicializa o serviço de envio de emails.
-        Se os parâmetros não forem fornecidos, tentará usar variáveis de ambiente.
+        Inicializa o serviÃ§o de envio de emails.
+        Se os parÃ¢metros nÃ£o forem fornecidos, tentarÃ¡ usar variÃ¡veis de ambiente.
         """
         self.smtp_server = smtp_server or os.environ.get('SMTP_SERVER')
         self.smtp_port = smtp_port or os.environ.get('SMTP_PORT', 587)
@@ -17,19 +17,19 @@ class EmailSender:
         
     def send_email(self, to_email, subject, body, is_html=False):
         """
-        Envia um email para o destinatário especificado.
+        Envia um email para o destinatÃ¡rio especificado.
         
         Args:
-            to_email (str): Email do destinatário
+            to_email (str): Email do destinatÃ¡rio
             subject (str): Assunto do email
             body (str): Corpo do email
-            is_html (bool): Se o corpo do email é HTML
+            is_html (bool): Se o corpo do email Ã© HTML
             
         Returns:
-            bool: True se o email foi enviado com sucesso, False caso contrário
+            bool: True se o email foi enviado com sucesso, False caso contrÃ¡rio
         """
         if not all([self.smtp_server, self.smtp_port, self.smtp_user, self.smtp_password]):
-            current_app.logger.error("Configurações de SMTP incompletas")
+            current_app.logger.error("ConfiguraÃ§Ãµes de SMTP incompletas")
             return False
             
         try:
@@ -58,27 +58,27 @@ class EmailSender:
             
     def send_reminder(self, to_email, lead_name, action, due_date):
         """
-        Envia um lembrete sobre uma ação pendente com um lead.
+        Envia um lembrete sobre uma aÃ§Ã£o pendente com um lead.
         
         Args:
-            to_email (str): Email do destinatário
+            to_email (str): Email do destinatÃ¡rio
             lead_name (str): Nome do lead
-            action (str): Ação pendente
+            action (str): AÃ§Ã£o pendente
             due_date (str): Data de vencimento formatada
             
         Returns:
-            bool: True se o email foi enviado com sucesso, False caso contrário
+            bool: True se o email foi enviado com sucesso, False caso contrÃ¡rio
         """
-        subject = f"Lembrete: Ação pendente com {lead_name}"
+        subject = f"Lembrete: AÃ§Ã£o pendente com {lead_name}"
         
         body = f"""
         <html>
         <body>
-            <h2>Lembrete de Ação Pendente</h2>
-            <p>Você tem uma ação pendente com o lead <strong>{lead_name}</strong>.</p>
-            <p><strong>Ação:</strong> {action}</p>
+            <h2>Lembrete de AÃ§Ã£o Pendente</h2>
+            <p>VocÃª tem uma aÃ§Ã£o pendente com o lead <strong>{lead_name}</strong>.</p>
+            <p><strong>AÃ§Ã£o:</strong> {action}</p>
             <p><strong>Data de vencimento:</strong> {due_date}</p>
-            <p>Acesse o CRM para mais detalhes e para registrar a interação.</p>
+            <p>Acesse o CRM para mais detalhes e para registrar a interaÃ§Ã£o.</p>
         </body>
         </html>
         """
@@ -87,14 +87,14 @@ class EmailSender:
         
     def send_bulk_emails(self, template, leads):
         """
-        Envia emails em massa usando um template para vários leads.
+        Envia emails em massa usando um template para vÃ¡rios leads.
         
         Args:
             template (dict): Template com assunto e corpo
             leads (list): Lista de leads com emails
             
         Returns:
-            dict: Dicionário com contagem de sucessos e falhas
+            dict: DicionÃ¡rio com contagem de sucessos e falhas
         """
         results = {'success': 0, 'failed': 0, 'failed_emails': []}
         

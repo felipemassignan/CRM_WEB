@@ -14,16 +14,16 @@ bp = Blueprint('integrations', __name__, url_prefix='/integrations')
 @bp.route('/')
 @login_required
 def index():
-    """Página principal de integrações."""
+    """PÃ¡gina principal de integraÃ§Ãµes."""
     return render_template('integrations/index.html')
 
 @bp.route('/email', methods=('GET', 'POST'))
 @login_required
 def email():
-    """Integração com email."""
+    """IntegraÃ§Ã£o com email."""
     if request.method == 'POST':
-        # Implementação básica - será expandida posteriormente
-        flash('Configuração de email salva com sucesso!')
+        # ImplementaÃ§Ã£o bÃ¡sica - serÃ¡ expandida posteriormente
+        flash('ConfiguraÃ§Ã£o de email salva com sucesso!')
         return redirect(url_for('integrations.index'))
     
     return render_template('integrations/email.html')
@@ -31,10 +31,10 @@ def email():
 @bp.route('/linkedin', methods=('GET', 'POST'))
 @login_required
 def linkedin():
-    """Integração com LinkedIn."""
+    """IntegraÃ§Ã£o com LinkedIn."""
     if request.method == 'POST':
-        # Implementação básica - será expandida posteriormente
-        flash('Configuração do LinkedIn salva com sucesso!')
+        # ImplementaÃ§Ã£o bÃ¡sica - serÃ¡ expandida posteriormente
+        flash('ConfiguraÃ§Ã£o do LinkedIn salva com sucesso!')
         return redirect(url_for('integrations.index'))
     
     return render_template('integrations/linkedin.html')
@@ -60,23 +60,23 @@ def import_data():
                 stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
                 csv_data = csv.reader(stream)
                 
-                # Obter cabeçalho
+                # Obter cabeÃ§alho
                 header = next(csv_data)
                 
-                # Verificar colunas mínimas necessárias
+                # Verificar colunas mÃ­nimas necessÃ¡rias
                 required_columns = ['name', 'company', 'position']
                 missing_columns = [col for col in required_columns if col not in header]
                 
                 if missing_columns:
-                    flash(f'Colunas obrigatórias ausentes: {", ".join(missing_columns)}')
+                    flash(f'Colunas obrigatÃ³rias ausentes: {", ".join(missing_columns)}')
                     return redirect(request.url)
                 
-                # Mapear índices das colunas
+                # Mapear Ã­ndices das colunas
                 name_idx = header.index('name')
                 company_idx = header.index('company')
                 position_idx = header.index('position')
                 
-                # Índices opcionais
+                # Ãndices opcionais
                 email_idx = header.index('email') if 'email' in header else None
                 phone_idx = header.index('phone') if 'phone' in header else None
                 industry_idx = header.index('industry') if 'industry' in header else None
@@ -97,7 +97,7 @@ def import_data():
                             linkedin_url=row[linkedin_idx] if linkedin_idx is not None and linkedin_idx < len(row) else None,
                             region=row[region_idx] if region_idx is not None and region_idx < len(row) else None,
                             status='Novo',
-                            source='Importação CSV',
+                            source='ImportaÃ§Ã£o CSV',
                             added_date=datetime.utcnow()
                         )
                         db.session.add(lead)
@@ -111,7 +111,7 @@ def import_data():
                 flash(f'Erro ao importar arquivo: {str(e)}')
                 return redirect(request.url)
         else:
-            flash('Formato de arquivo não suportado. Por favor, envie um arquivo CSV.')
+            flash('Formato de arquivo nÃ£o suportado. Por favor, envie um arquivo CSV.')
             return redirect(request.url)
     
     return render_template('integrations/import.html')
@@ -129,7 +129,7 @@ def export_data():
         output = io.StringIO()
         writer = csv.writer(output)
         
-        # Escrever cabeçalho
+        # Escrever cabeÃ§alho
         writer.writerow(['id', 'name', 'position', 'company', 'industry', 'linkedin_url', 
                         'email', 'phone', 'region', 'status', 'source', 'added_date', 
                         'last_interaction_date', 'next_action', 'next_action_date', 
@@ -164,13 +164,13 @@ def export_data():
         }
     
     elif export_type == 'interactions':
-        # Exportar interações
+        # Exportar interaÃ§Ãµes
         interactions = Interaction.query.all()
         
         output = io.StringIO()
         writer = csv.writer(output)
         
-        # Escrever cabeçalho
+        # Escrever cabeÃ§alho
         writer.writerow(['id', 'lead_id', 'lead_name', 'date', 'type', 'content', 
                         'response', 'next_step', 'next_step_date', 'result', 'notes'])
         
@@ -183,7 +183,7 @@ def export_data():
                 interaction.date.strftime('%Y-%m-%d %H:%M:%S') if interaction.date else '',
                 interaction.type,
                 interaction.content,
-                'Sim' if interaction.response else 'Não',
+                'Sim' if interaction.response else 'NÃ£o',
                 interaction.next_step,
                 interaction.next_step_date.strftime('%Y-%m-%d %H:%M:%S') if interaction.next_step_date else '',
                 interaction.result,
@@ -197,13 +197,13 @@ def export_data():
         }
     
     else:
-        flash('Tipo de exportação não suportado.')
+        flash('Tipo de exportaÃ§Ã£o nÃ£o suportado.')
         return redirect(url_for('dashboard.index'))
 
 @bp.route('/send_email/<int:lead_id>', methods=('GET', 'POST'))
 @login_required
 def send_email(lead_id):
-    """Envia email para um lead específico."""
+    """Envia email para um lead especÃ­fico."""
     lead = Lead.query.get_or_404(lead_id)
     
     if request.method == 'POST':
@@ -211,13 +211,13 @@ def send_email(lead_id):
         content = request.form['content']
         
         if not lead.email:
-            flash('Este lead não possui email cadastrado.')
+            flash('Este lead nÃ£o possui email cadastrado.')
             return redirect(url_for('leads.view', id=lead_id))
         
-        # Implementação básica - será expandida posteriormente
-        # Em uma implementação real, aqui seria feita a integração com um serviço de email
+        # ImplementaÃ§Ã£o bÃ¡sica - serÃ¡ expandida posteriormente
+        # Em uma implementaÃ§Ã£o real, aqui seria feita a integraÃ§Ã£o com um serviÃ§o de email
         
-        # Registrar a interação
+        # Registrar a interaÃ§Ã£o
         interaction = Interaction(
             lead_id=lead.id,
             type='Email',
@@ -231,7 +231,7 @@ def send_email(lead_id):
         db.session.add(interaction)
         db.session.commit()
         
-        flash('Email registrado com sucesso! (Funcionalidade de envio será implementada em breve)')
+        flash('Email registrado com sucesso! (Funcionalidade de envio serÃ¡ implementada em breve)')
         return redirect(url_for('leads.view', id=lead_id))
     
     # Obter templates de email
@@ -260,7 +260,7 @@ def api_leads():
 @bp.route('/api/interactions/<int:lead_id>')
 @login_required
 def api_interactions(lead_id):
-    """API simples para obter interações de um lead em formato JSON."""
+    """API simples para obter interaÃ§Ãµes de um lead em formato JSON."""
     interactions = Interaction.query.filter_by(lead_id=lead_id).all()
     interactions_list = []
     

@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
-    # MÈtodos necess·rios para Flask-Login
+    # M√©todos necess√°rios para Flask-Login
     def get_id(self):
         return str(self.id)
     

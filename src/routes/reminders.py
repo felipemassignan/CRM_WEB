@@ -17,7 +17,7 @@ def index():
 @bp.route('/create/<int:lead_id>', methods=('GET', 'POST'))
 @login_required
 def create(lead_id):
-    """Cria um novo lembrete para um lead específico."""
+    """Cria um novo lembrete para um lead especÃ­fico."""
     lead = Lead.query.get_or_404(lead_id)
     
     if request.method == 'POST':
@@ -28,9 +28,9 @@ def create(lead_id):
         error = None
         
         if not title:
-            error = 'Título é obrigatório.'
+            error = 'TÃ­tulo Ã© obrigatÃ³rio.'
         elif not due_date_str:
-            error = 'Data de vencimento é obrigatória.'
+            error = 'Data de vencimento Ã© obrigatÃ³ria.'
         
         if error is not None:
             flash(error)
@@ -44,7 +44,7 @@ def create(lead_id):
                 due_date=due_date
             )
             
-            # Atualizar próxima ação do lead
+            # Atualizar prÃ³xima aÃ§Ã£o do lead
             lead.next_action = title
             lead.next_action_date = due_date
             
@@ -72,16 +72,16 @@ def update(id):
         error = None
         
         if not reminder.title:
-            error = 'Título é obrigatório.'
+            error = 'TÃ­tulo Ã© obrigatÃ³rio.'
         elif not due_date_str:
-            error = 'Data de vencimento é obrigatória.'
+            error = 'Data de vencimento Ã© obrigatÃ³ria.'
         
         if error is not None:
             flash(error)
         else:
             reminder.due_date = datetime.strptime(due_date_str, '%Y-%m-%d')
             
-            # Se o lembrete for a próxima ação do lead, atualizar
+            # Se o lembrete for a prÃ³xima aÃ§Ã£o do lead, atualizar
             if lead.next_action_date == reminder.due_date:
                 lead.next_action = reminder.title
                 lead.next_action_date = reminder.due_date
@@ -102,18 +102,18 @@ def delete(id):
     db.session.delete(reminder)
     db.session.commit()
     
-    flash('Lembrete excluído com sucesso!')
+    flash('Lembrete excluÃ­do com sucesso!')
     return redirect(url_for('leads.view', id=lead_id))
 
 @bp.route('/<int:id>/complete', methods=('POST',))
 @login_required
 def complete(id):
-    """Marca um lembrete como concluído."""
+    """Marca um lembrete como concluÃ­do."""
     reminder = Reminder.query.get_or_404(id)
     reminder.is_completed = True
     db.session.commit()
     
-    flash('Lembrete marcado como concluído!')
+    flash('Lembrete marcado como concluÃ­do!')
     return redirect(url_for('reminders.index'))
 
 @bp.route('/today')
@@ -131,7 +131,7 @@ def today():
 @bp.route('/lead/<int:lead_id>')
 @login_required
 def by_lead(lead_id):
-    """Lista todos os lembretes de um lead específico."""
+    """Lista todos os lembretes de um lead especÃ­fico."""
     lead = Lead.query.get_or_404(lead_id)
     reminders = Reminder.query.filter_by(lead_id=lead_id).order_by(Reminder.due_date).all()
     

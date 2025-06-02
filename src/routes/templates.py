@@ -30,9 +30,9 @@ def create():
         error = None
         
         if not category:
-            error = 'Categoria é obrigatória.'
+            error = 'Categoria Ã© obrigatÃ³ria.'
         elif not content:
-            error = 'Conteúdo é obrigatório.'
+            error = 'ConteÃºdo Ã© obrigatÃ³rio.'
         
         if error is not None:
             flash(error)
@@ -69,9 +69,9 @@ def update(id):
         error = None
         
         if not template.category:
-            error = 'Categoria é obrigatória.'
+            error = 'Categoria Ã© obrigatÃ³ria.'
         elif not template.content:
-            error = 'Conteúdo é obrigatório.'
+            error = 'ConteÃºdo Ã© obrigatÃ³rio.'
         
         if error is not None:
             flash(error)
@@ -89,7 +89,7 @@ def delete(id):
     template = Template.query.get_or_404(id)
     db.session.delete(template)
     db.session.commit()
-    flash('Template excluído com sucesso!')
+    flash('Template excluÃ­do com sucesso!')
     return redirect(url_for('templates.index'))
 
 @bp.route('/<int:id>/view')
@@ -129,10 +129,10 @@ def generate(template_id, lead_id):
     template = Template.query.get_or_404(template_id)
     lead = Lead.query.get_or_404(lead_id)
     
-    # Substituir variáveis no template
+    # Substituir variÃ¡veis no template
     content = template.content
     
-    # Mapeamento de variáveis
+    # Mapeamento de variÃ¡veis
     variables = {
         "{nome}": lead.name,
         "{primeiro_nome}": lead.name.split()[0] if lead.name else "",
@@ -142,7 +142,7 @@ def generate(template_id, lead_id):
         "{data}": datetime.now().strftime("%d/%m/%Y")
     }
     
-    # Substituir cada variável
+    # Substituir cada variÃ¡vel
     for var, value in variables.items():
         content = content.replace(var, value or "")
     

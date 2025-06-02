@@ -3,8 +3,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_required
 from src.services.lead_service import LeadService
 from src.forms.lead_forms import LeadForm
-from src.models.lead import Lead # Adicione esta importação
-from flask import request # Adicione esta importação para filtros
+from src.models.lead import Lead # Adicione esta importaÃ§Ã£o
+from flask import request # Adicione esta importaÃ§Ã£o para filtros
 from datetime import datetime
 
 bp = Blueprint('leads', __name__, url_prefix='/leads')
@@ -49,7 +49,7 @@ def create():
 def edit(lead_id):
     lead = LeadService.get_lead_by_id(lead_id)
     if not lead:
-        flash('Lead não encontrado.')
+        flash('Lead nÃ£o encontrado.')
         return redirect(url_for('leads.index'))
 
     form = LeadForm(obj=lead)
@@ -73,9 +73,9 @@ def edit(lead_id):
 def delete(lead_id):
     lead = LeadService.delete_lead(lead_id)
     if not lead:
-        flash('Lead não encontrado.')
+        flash('Lead nÃ£o encontrado.')
     else:
-        flash('Lead excluído com sucesso.')
+        flash('Lead excluÃ­do com sucesso.')
     return redirect(url_for('leads.index'))
 
 @bp.route('/<int:lead_id>')
@@ -83,10 +83,10 @@ def delete(lead_id):
 def view(lead_id):
     lead = LeadService.get_lead_by_id(lead_id)
     if not lead:
-        flash('Lead não encontrado.')
+        flash('Lead nÃ£o encontrado.')
         return redirect(url_for('leads.index'))
     
-    # Carregar interações e lembretes para o lead
+    # Carregar interaÃ§Ãµes e lembretes para o lead
     interactions = Interaction.query.filter_by(lead_id=lead_id).order_by(Interaction.date.desc()).all()
     reminders = Reminder.query.filter_by(lead_id=lead_id).order_by(Reminder.due_date).all()
 

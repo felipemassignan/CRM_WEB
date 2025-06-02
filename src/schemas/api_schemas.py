@@ -17,7 +17,7 @@ class LeadSchema(Schema):
     email = fields.Email(allow_none=True)
     phone = fields.String(validate=validate.Length(max=20), allow_none=True)
     linkedin_url = fields.URL(validate=validate.Length(max=255), allow_none=True)
-    status = fields.String(validate=validate.OneOf(Lead.get_status_choices())) # <-- CORREÇÃO AQUI
+    status = fields.String(validate=validate.OneOf(Lead.get_status_choices())) # <-- CORREÃÃO AQUI
     source = fields.String(validate=validate.Length(max=100), allow_none=True)
     notes = fields.String(validate=validate.Length(max=1000), allow_none=True)
     created_at = fields.DateTime(dump_only=True)
@@ -27,7 +27,7 @@ class InteractionSchema(Schema):
     id = fields.Integer(dump_only=True)
     lead_id = fields.Integer(required=True)
     type = fields.String(required=True, validate=validate.OneOf([
-        'Email', 'Telefone', 'Reunião', 'LinkedIn', 'Outro'
+        'Email', 'Telefone', 'ReuniÃ£o', 'LinkedIn', 'Outro'
     ]))
     date = fields.DateTime(required=True)
     notes = fields.String(validate=validate.Length(max=1000), allow_none=True)

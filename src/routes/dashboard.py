@@ -29,7 +29,7 @@ def index():
 
     # Leads by status for pipeline
     leads_by_status = {}
-    for status in ['Novo', 'Conectado', 'Conversando', 'Reunião Agendada', 'Proposta Enviada', 'Cliente']:
+    for status in ['Novo', 'Conectado', 'Conversando', 'ReuniÃ£o Agendada', 'Proposta Enviada', 'Cliente']:
         leads_by_status[status] = Lead.query.filter_by(status=status).all()
 
     # Recent activities
@@ -40,15 +40,15 @@ def index():
     for interaction in recent_interactions:
         activity_type = {
             'Email': {'class': 'info', 'icon': 'envelope'},
-            'Ligação': {'class': 'success', 'icon': 'telephone'},
-            'Reunião': {'class': 'primary', 'icon': 'calendar-event'},
+            'LigaÃ§Ã£o': {'class': 'success', 'icon': 'telephone'},
+            'ReuniÃ£o': {'class': 'primary', 'icon': 'calendar-event'},
             'Mensagem LinkedIn': {'class': 'info', 'icon': 'linkedin'}
         }.get(interaction.type, {'class': 'secondary', 'icon': 'chat'})
         
         recent_activities.append({
             'type_class': activity_type['class'],
             'icon': activity_type['icon'],
-            'description': f"Interação com {interaction.lead.name} ({interaction.type})",
+            'description': f"InteraÃ§Ã£o com {interaction.lead.name} ({interaction.type})",
             'time_ago': humanize.naturaltime(datetime.now() - interaction.date)
         })
 

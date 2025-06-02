@@ -25,41 +25,41 @@ interaction_schema = InteractionSchema()
 interactions_schema = InteractionSchema(many=True)
 auth_schema = AuthSchema()
 
-# FunÁ„o para verificar tokens de API
+# Fun√ß√£o para verificar tokens de API
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
         
-        # Verificar se o token est· no header Authorization
+        # Verificar se o token est√° no header Authorization
         auth_header = request.headers.get('Authorization')
         if auth_header and auth_header.startswith('Bearer '):
             token = auth_header.split(' ')[1]
         
-        # Verificar se o token est· nos par‚metros da query
+        # Verificar se o token est√° nos par√¢metros da query
         if not token:
             token = request.args.get('token')
         
         if not token:
             return jsonify({'msg': 'Token ausente!'}), 401
         
-        # Verificar se o token existe e est· ativo
+        # Verificar se o token existe e est√° ativo
         api_token = ApiToken.query.filter_by(token=token, is_active=True).first()
         if not api_token:
-            return jsonify({'msg': 'Token inv·lido ou revogado!'}), 401
+            return jsonify({'msg': 'Token inv√°lido ou revogado!'}), 401
         
-        # Atualizar a data do ˙ltimo uso
+        # Atualizar a data do √∫ltimo uso
         api_token.last_used_at = datetime.utcnow()
         db.session.commit()
         
-        # Adicionar o usu·rio ao contexto da requisiÁ„o
+        # Adicionar o usu√°rio ao contexto da requisi√ß√£o
         request.current_user = api_token.user
         
         return f(*args, **kwargs)
     
     return decorated
 
-# Rota para autenticaÁ„o e obtenÁ„o de token JWT
+# Rota para autentica√ß√£o e obten√ß√£o de token JWT
 @bp.route('/auth/token', methods=['POST'])
 def get_token():
     try:
@@ -74,7 +74,7 @@ def get_token():
     user = User.query.filter_by(username=username).first()
     
     if not user or not user.check_password(password):
-        return jsonify({"msg": "Credenciais inv·lidas"}), 401
+        return jsonify({"msg": "Credenciais inv√°lidas"}), 401
     
     # Criar tokens
     access_token = create_access_token(identity=user.id)
@@ -90,7 +90,7 @@ def refresh():
     access_token = create_access_token(identity=current_user_id)
     return jsonify(access_token=access_token), 200
 
-# Rota para obter informaÁıes do usu·rio atual
+# Rota para obter informa√ß√µes do usu√°rio atual
 @bp.route('/user/me', methods=['GET'])
 @jwt_required()
 def get_user_info():
@@ -98,7 +98,7 @@ def get_user_info():
     user = User.query.get(current_user_id)
     
     if not user:
-        return jsonify({"msg": "Usu·rio n„o encontrado"}), 404
+        return jsonify({"msg": "Usu√°rio n√£o encontrado"}), 404
     
     return jsonify(user_schema.dump(user)), 200
 
@@ -136,9 +136,9 @@ def get_lead(lead_id):
     lead = Lead.query.get(lead_id)
     
     if not lead:
-        return jsonify({"msg": "Lead n„o encontrado"}), 404
+        return jsonify({"msg": "Lead n√£o encontrado"}), 404
     
-    # Incluir interaÁıes relacionadas
+    # Incluir intera√ß√µes relacionadas
     result = lead_schema.dump(lead)
     result['interactions'] = interactions_schema.dump(lead.interactions)
     
@@ -150,7 +150,7 @@ def update_lead(lead_id):
     lead = Lead.query.get(lead_id)
     
     if not lead:
-        return jsonify({"msg": "Lead n„o encontrado"}), 404
+        return jsonify({"msg": "Lead n√£o encontrado"}), 404
     
     try:
         # Validar dados de entrada
@@ -175,14 +175,14 @@ def delete_lead(lead_id):
     lead = Lead.query.get(lead_id)
     
     if not lead:
-        return jsonify({"msg": "Lead n„o encontrado"}), 404
+        return jsonify({"msg": "Lead n√£o encontrado"}), 404
     
     db.session.delete(lead)
     db.session.commit()
     
-    return jsonify({"msg": "Lead excluÌdo com sucesso"}), 200
+    return jsonify({"msg": "Lead exclu√≠do com sucesso"}), 200
 
-# Rotas para InteraÁıes
+# Rotas para Intera√ß√µes
 @bp.route('/interactions', methods=['POST'])
 @jwt_required()
 def create_interaction():
@@ -195,9 +195,9 @@ def create_interaction():
     # Verificar se o lead existe
     lead = Lead.query.get(interaction_data['lead_id'])
     if not lead:
-        return jsonify({"msg": "Lead n„o encontrado"}), 404
+        return jsonify({"msg": "Lead n√£o encontrado"}), 404
     
-    # Criar nova interaÁ„o
+    # Criar nova intera√ß√£o
     new_interaction = Interaction(**interaction_data)
     new_interaction.created_at = datetime.utcnow()
     
@@ -205,11 +205,11 @@ def create_interaction():
     db.session.commit()
     
     return jsonify({
-        "msg": "InteraÁ„o criada com sucesso",
+        "msg": "Intera√ß√£o criada com sucesso",
         "interaction": interaction_schema.dump(new_interaction)
     }), 201
 
-# Rotas com autenticaÁ„o por token simples
+# Rotas com autentica√ß√£o por token simples
 @bp.route('/leads/token', methods=['GET'])
 @token_required
 def get_leads_with_token():
@@ -237,4 +237,4 @@ def create_lead_with_token():
         "lead": lead_schema.dump(new_lead)
     }), 201
 
-# Adicione mais rotas para a API conforme necess·rio...
+# Adicione mais rotas para a API conforme necess√°rio...

@@ -10,14 +10,14 @@ bp = Blueprint('interactions', __name__, url_prefix='/interactions')
 @bp.route('/')
 @login_required
 def index():
-    """Lista todas as interações."""
+    """Lista todas as interaÃ§Ãµes."""
     interactions = Interaction.query.order_by(Interaction.date.desc()).all()
     return render_template('interactions/index.html', interactions=interactions)
 
 @bp.route('/create/<int:lead_id>', methods=('GET', 'POST'))
 @login_required
 def create(lead_id):
-    """Cria uma nova interação para um lead específico."""
+    """Cria uma nova interaÃ§Ã£o para um lead especÃ­fico."""
     lead = Lead.query.get_or_404(lead_id)
     
     if request.method == 'POST':
@@ -28,7 +28,7 @@ def create(lead_id):
         result = request.form['result']
         notes = request.form['notes']
         
-        # Processar data do próximo passo
+        # Processar data do prÃ³ximo passo
         next_step_date = None
         if request.form['next_step_date']:
             next_step_date = datetime.strptime(request.form['next_step_date'], '%Y-%m-%d')
@@ -36,7 +36,7 @@ def create(lead_id):
         error = None
         
         if not interaction_type:
-            error = 'Tipo de interação é obrigatório.'
+            error = 'Tipo de interaÃ§Ã£o Ã© obrigatÃ³rio.'
         
         if error is not None:
             flash(error)
@@ -53,10 +53,10 @@ def create(lead_id):
                 date=datetime.utcnow()
             )
             
-            # Atualizar a data da última interação do lead
+            # Atualizar a data da Ãºltima interaÃ§Ã£o do lead
             lead.last_interaction_date = datetime.utcnow()
             
-            # Se houver próximo passo, atualizar no lead também
+            # Se houver prÃ³ximo passo, atualizar no lead tambÃ©m
             if next_step:
                 lead.next_action = next_step
                 lead.next_action_date = next_step_date
@@ -64,7 +64,7 @@ def create(lead_id):
             db.session.add(interaction)
             db.session.commit()
             
-            flash('Interação registrada com sucesso!')
+            flash('InteraÃ§Ã£o registrada com sucesso!')
             return redirect(url_for('leads.view', id=lead.id))
     
     return render_template('interactions/create.html', lead=lead)
@@ -72,7 +72,7 @@ def create(lead_id):
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    """Atualiza uma interação existente."""
+    """Atualiza uma interaÃ§Ã£o existente."""
     interaction = Interaction.query.get_or_404(id)
     lead = Lead.query.get(interaction.lead_id)
     
@@ -84,25 +84,25 @@ def update(id):
         interaction.result = request.form['result']
         interaction.notes = request.form['notes']
         
-        # Processar data do próximo passo
+        # Processar data do prÃ³ximo passo
         if request.form['next_step_date']:
             interaction.next_step_date = datetime.strptime(request.form['next_step_date'], '%Y-%m-%d')
         
         error = None
         
         if not interaction.type:
-            error = 'Tipo de interação é obrigatório.'
+            error = 'Tipo de interaÃ§Ã£o Ã© obrigatÃ³rio.'
         
         if error is not None:
             flash(error)
         else:
-            # Se houver próximo passo, atualizar no lead também
+            # Se houver prÃ³ximo passo, atualizar no lead tambÃ©m
             if interaction.next_step:
                 lead.next_action = interaction.next_step
                 lead.next_action_date = interaction.next_step_date
                 
             db.session.commit()
-            flash('Interação atualizada com sucesso!')
+            flash('InteraÃ§Ã£o atualizada com sucesso!')
             return redirect(url_for('leads.view', id=interaction.lead_id))
     
     return render_template('interactions/update.html', interaction=interaction, lead=lead)
@@ -110,20 +110,20 @@ def update(id):
 @bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
-    """Exclui uma interação."""
+    """Exclui uma interaÃ§Ã£o."""
     interaction = Interaction.query.get_or_404(id)
     lead_id = interaction.lead_id
     
     db.session.delete(interaction)
     db.session.commit()
     
-    flash('Interação excluída com sucesso!')
+    flash('InteraÃ§Ã£o excluÃ­da com sucesso!')
     return redirect(url_for('leads.view', id=lead_id))
 
 @bp.route('/lead/<int:lead_id>')
 @login_required
 def by_lead(lead_id):
-    """Lista todas as interações de um lead específico."""
+    """Lista todas as interaÃ§Ãµes de um lead especÃ­fico."""
     lead = Lead.query.get_or_404(lead_id)
     interactions = Interaction.query.filter_by(lead_id=lead_id).order_by(Interaction.date.desc()).all()
     
@@ -132,7 +132,7 @@ def by_lead(lead_id):
 @bp.route('/pending')
 @login_required
 def pending():
-    """Lista interações pendentes (com próximo passo)."""
+    """Lista interaÃ§Ãµes pendentes (com prÃ³ximo passo)."""
     interactions = Interaction.query.filter(Interaction.next_step != None, 
                                           Interaction.next_step != '').order_by(Interaction.next_step_date).all()
     

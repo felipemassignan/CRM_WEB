@@ -14,7 +14,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         UserService.create_user(form.data)
-        flash('Conta criada com sucesso! Agora você pode fazer login.')
+        flash('Conta criada com sucesso! Agora vocÃª pode fazer login.')
         return redirect(url_for('user.login'))
     
     return render_template('user/register.html', form=form)
@@ -23,7 +23,7 @@ def register():
 @login_required
 def manage_users():
     if current_user.role != 'admin':
-        flash('Acesso negado. Você precisa ser um administrador para acessar esta página.')
+        flash('Acesso negado. VocÃª precisa ser um administrador para acessar esta pÃ¡gina.')
         return redirect(url_for('dashboard.index'))
     
     users = UserService.get_all_users()
@@ -38,13 +38,13 @@ def edit_user(user_id):
     
     user = UserService.get_user_by_id(user_id)
     if not user:
-        flash('Usuário não encontrado.')
+        flash('UsuÃ¡rio nÃ£o encontrado.')
         return redirect(url_for('user.manage_users'))
     
     form = EditUserForm(original_username=user.username, original_email=user.email)
     if form.validate_on_submit():
         UserService.update_user(user_id, form.data)
-        flash('Usuário atualizado com sucesso.')
+        flash('UsuÃ¡rio atualizado com sucesso.')
         return redirect(url_for('user.manage_users'))
     
     return render_template('user/edit.html', form=form, user=user)
@@ -53,12 +53,12 @@ def edit_user(user_id):
 @login_required
 def delete_user(user_id):
     if current_user.role != 'admin':
-        flash('Acesso negado. Você precisa ser um administrador para excluir usuários.')
+        flash('Acesso negado. VocÃª precisa ser um administrador para excluir usuÃ¡rios.')
         return redirect(url_for('dashboard.index'))
     
     user = UserService.delete_user(user_id)
     if not user:
-        flash('Usuário não encontrado.')
+        flash('UsuÃ¡rio nÃ£o encontrado.')
     else:
-        flash('Usuário excluído com sucesso.')
+        flash('UsuÃ¡rio excluÃ­do com sucesso.')
     return redirect(url_for('user.manage_users'))

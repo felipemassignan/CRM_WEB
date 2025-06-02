@@ -8,7 +8,7 @@ from src.config import config
 from src.models.db import db
 from src.models.user import User
 
-# Importação dos blueprints
+# ImportaÃ§Ã£o dos blueprints
 from src.routes.dashboard import bp as dashboard_bp
 from src.routes.leads import bp as leads_bp
 from src.routes.interactions import bp as interactions_bp
@@ -21,20 +21,20 @@ def create_app(config_name='development'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
-    # Configurações adicionais para JWT
+    # ConfiguraÃ§Ãµes adicionais para JWT
     app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']  # Usar a mesma chave secreta
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)  # Token expira em 1 hora
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Refresh token expira em 30 dias
     
-    # Inicializar extensões
+    # Inicializar extensÃµes
     db.init_app(app)
     migrate = Migrate(app, db)
     
     # Configurar o LoginManager
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'user.login'  # Rota para redirecionamento quando login é necessário
-    login_manager.login_message = 'Por favor, faça login para acessar esta página.'
+    login_manager.login_view = 'user.login'  # Rota para redirecionamento quando login Ã© necessÃ¡rio
+    login_manager.login_message = 'Por favor, faÃ§a login para acessar esta pÃ¡gina.'
     
     @login_manager.user_loader
     def load_user(user_id):
