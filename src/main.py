@@ -1,6 +1,8 @@
-from flask import Flask
+# src/main.py
+
+from flask import Flask, redirect, url_for # Importe redirect e url_for
 from flask_migrate import Migrate
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user # Importe current_user
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from src.config import config
@@ -52,6 +54,14 @@ def create_app(config_name='development'):
     app.register_blueprint(integrations_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(api_bp)
+
+    # --- NOVA ROTA RAIZ ---
+    @app.route('/')
+    def index():
+        if current_user.is_authenticated:
+            return redirect(url_for('dashboard.index'))
+        return redirect(url_for('user.login'))
+    # --- FIM NOVA ROTA RAIZ ---
     
     return app
 
