@@ -34,7 +34,6 @@ if [ -n "$DATABASE_URL" ]; then
   >&2 echo "PostgreSQL está disponível - continuando..."
 fi
 
-<<<<<<< HEAD
 # Verificar variáveis de ambiente críticas
 if [ -z "$SECRET_KEY" ]; then
     echo "ERRO: A variável de ambiente SECRET_KEY não está definida!"
@@ -50,7 +49,6 @@ pip install flask-migrate
 =======
 # Instalar dependências Python
 pip install -r requirements.txt
->>>>>>> 2a3e6cfaaf4626fc1ae6caad25c94bd154830716
 
 # Verificar se o módulo Flask está disponível
 python -c "import flask" || pip install flask
