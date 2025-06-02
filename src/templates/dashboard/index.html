@@ -3,185 +3,328 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Dashboard CRM</h1>
-    
-    <div class="row mt-4">
-        <!-- Gráfico de Leads por Status -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    Leads por Status
-                </div>
+<div class="container-fluid mt-4">
+    <!-- Quick Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <canvas id="leadsStatusChart"></canvas>
+                    <h5 class="card-title">Total Leads</h5>
+                    <h2 class="display-4">{{ total_leads }}</h2>
+                    <p class="card-text">Ativos no sistema</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Gráfico de Leads por Setor -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    Leads por Setor
-                </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
                 <div class="card-body">
-                    <canvas id="leadsIndustryChart"></canvas>
+                    <h5 class="card-title">Taxa de Conversão</h5>
+                    <h2 class="display-4">{{ (conversion_rate * 100)|round(1) }}%</h2>
+                    <p class="card-text">Leads convertidos</p>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="row">
-        <!-- Gráfico de Interações por Tipo -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    Interações por Tipo
-                </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
                 <div class="card-body">
-                    <canvas id="interactionsTypeChart"></canvas>
+                    <h5 class="card-title">Interações Hoje</h5>
+                    <h2 class="display-4">{{ today_interactions }}</h2>
+                    <p class="card-text">Realizadas hoje</p>
                 </div>
             </div>
         </div>
-        
-        <!-- Gráfico de Interações por Semana -->
-        <div class="col-md-6 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    Interações por Semana
-                </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
                 <div class="card-body">
-                    <canvas id="interactionsWeekChart"></canvas>
+                    <h5 class="card-title">Lembretes Pendentes</h5>
+                    <h2 class="display-4">{{ pending_reminders }}</h2>
+                    <p class="card-text">Aguardando ação</p>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="row">
-        <!-- Taxa de Resposta -->
-        <div class="col-md-4 mb-4">
+        <!-- Lead Pipeline -->
+        <div class="col-md-8 mb-4">
             <div class="card">
-                <div class="card-header">
-                    Taxa de Resposta
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Pipeline de Leads</h5>
+                    <a href="{{ url_for('leads.create') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Novo Lead
+                    </a>
                 </div>
-                <div class="card-body text-center">
-                    <h2>{{ (response_rate * 100)|round(1) }}%</h2>
+                <div class="card-body">
+                    <div class="pipeline-container">
+                        {% for status in ['Novo', 'Conectado', 'Conversando', 'Reunião Agendada', 'Proposta Enviada', 'Cliente'] %}
+                        <div class="pipeline-stage">
+                            <h6 class="pipeline-title">{{ status }}</h6>
+                            <div class="pipeline-cards">
+                                {% for lead in leads_by_status.get(status, []) %}
+                                <div class="pipeline-card">
+                                    <h6>{{ lead.name }}</h6>
+                                    <p class="company">{{ lead.company }}</p>
+                                    <div class="actions">
+                                        <a href="{{ url_for('leads.view', id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('interactions.create', lead_id=lead.id) }}" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-chat"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Lembretes para Hoje -->
+
+        <!-- Activity Feed -->
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-header">
-                    Lembretes para Hoje ({{ reminders_today|length }})
+                    <h5 class="mb-0">Atividades Recentes</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
-                        {% for reminder in reminders_today %}
-                        <li class="list-group-item">
-                            {{ reminder.title }} - {{ reminder.due_date.strftime('%H:%M') }}
-                        </li>
-                        {% else %}
-                        <li class="list-group-item">Nenhum lembrete para hoje</li>
+                    <div class="activity-feed">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-icon bg-{{ activity.type_class }}">
+                                <i class="bi bi-{{ activity.icon }}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-text">{{ activity.description }}</div>
+                                <div class="activity-time">{{ activity.time_ago }}</div>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </ul>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Lembretes Atrasados -->
-        <div class="col-md-4 mb-4">
+    </div>
+
+    <div class="row">
+        <!-- Charts Row -->
+        <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-header">
-                    Lembretes Atrasados ({{ overdue_reminders|length }})
+                    <h5 class="mb-0">Leads por Setor</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
-                        {% for reminder in overdue_reminders %}
-                        <li class="list-group-item">
-                            {{ reminder.title }} - {{ reminder.due_date.strftime('%d/%m/%Y') }}
-                        </li>
-                        {% else %}
-                        <li class="list-group-item">Nenhum lembrete atrasado</li>
-                        {% endfor %}
-                    </ul>
+                    <canvas id="leadsIndustryChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Interações por Semana</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="interactionsWeekChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Reminders -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Próximos Lembretes</h5>
+                    <a href="{{ url_for('reminders.index') }}" class="btn btn-primary btn-sm">Ver Todos</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Lead</th>
+                                    <th>Ação</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reminder in upcoming_reminders %}
+                                <tr>
+                                    <td>{{ reminder.lead.name }}</td>
+                                    <td>{{ reminder.title }}</td>
+                                    <td>{{ reminder.due_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge {% if reminder.is_completed %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ 'Concluído' if reminder.is_completed else 'Pendente' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('reminders.complete', id=reminder.id) }}" class="btn btn-sm btn-success">
+                                            <i class="bi bi-check-circle"></i>
+                                        </a>
+                                        <a href="{{ url_for('reminders.update', id=reminder.id) }}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.pipeline-container {
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem 0;
+    gap: 1rem;
+}
+
+.pipeline-stage {
+    min-width: 250px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.pipeline-title {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.pipeline-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pipeline-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.75rem;
+}
+
+.pipeline-card h6 {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.pipeline-card .company {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin: 0.25rem 0;
+}
+
+.pipeline-card .actions {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items: start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: white;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-text {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+</style>
+
+{% block extra_js %}
 <script>
-    // Dados para os gráficos
-    const leadsStatusData = {{ leads_by_status|safe }};
-    const leadsIndustryData = {{ leads_by_industry|safe }};
-    const interactionsTypeData = {{ interactions_by_type|safe }};
-    const interactionsWeekData = {{ interactions_by_week|safe }};
-    
-    // Gráfico de Leads por Status
-    new Chart(document.getElementById('leadsStatusChart'), {
-        type: 'pie',
+document.addEventListener('DOMContentLoaded', function() {
+    // Leads by Industry Chart
+    const industryCtx = document.getElementById('leadsIndustryChart').getContext('2d');
+    new Chart(industryCtx, {
+        type: 'doughnut',
         data: {
-            labels: leadsStatusData.labels,
+            labels: {{ industry_labels|tojson }},
             datasets: [{
-                data: leadsStatusData.values,
+                data: {{ industry_data|tojson }},
                 backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b',
+                    '#858796', '#5a5c69', '#2e59d9', '#17a673', '#2c9faf'
                 ]
-            }]
-        }
-    });
-    
-    // Gráfico de Leads por Setor
-    new Chart(document.getElementById('leadsIndustryChart'), {
-        type: 'bar',
-        data: {
-            labels: leadsIndustryData.labels,
-            datasets: [{
-                label: 'Leads por Setor',
-                data: leadsIndustryData.values,
-                backgroundColor: '#36A2EB'
             }]
         },
         options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right'
                 }
             }
         }
     });
-    
-    // Gráfico de Interações por Tipo
-    new Chart(document.getElementById('interactionsTypeChart'), {
-        type: 'doughnut',
-        data: {
-            labels: interactionsTypeData.labels,
-            datasets: [{
-                data: interactionsTypeData.values,
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-                ]
-            }]
-        }
-    });
-    
-    // Gráfico de Interações por Semana
-    new Chart(document.getElementById('interactionsWeekChart'), {
+
+    // Interactions by Week Chart
+    const interactionsCtx = document.getElementById('interactionsWeekChart').getContext('2d');
+    new Chart(interactionsCtx, {
         type: 'line',
         data: {
-            labels: interactionsWeekData.labels,
+            labels: {{ week_labels|tojson }},
             datasets: [{
                 label: 'Interações',
-                data: interactionsWeekData.values,
-                borderColor: '#4BC0C0',
-                tension: 0.1,
-                fill: false
+                data: {{ week_data|tojson }},
+                borderColor: '#4e73df',
+                tension: 0.3,
+                fill: true,
+                backgroundColor: 'rgba(78, 115, 223, 0.1)'
             }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
         }
     });
+});
 </script>
+{% endblock %}
 {% endblock %}
