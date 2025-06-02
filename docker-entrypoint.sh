@@ -10,8 +10,7 @@ import psycopg2
 try:
     database_url = os.environ.get('DATABASE_URL')
     if not database_url:
-        # Se não houver DATABASE_URL, consideramos que está usando SQLite
-        sys.exit(0)
+        sys.exit(0)  # Assume SQLite se DATABASE_URL não estiver definida
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     conn = psycopg2.connect(database_url)
@@ -25,12 +24,10 @@ END
 
 # Verificar se estamos usando PostgreSQL
 if [ -n "$DATABASE_URL" ]; then
-  # Aguardar até que o PostgreSQL esteja disponível
   until postgres_ready; do
     >&2 echo "PostgreSQL não está disponível - aguardando..."
     sleep 1
   done
-
   >&2 echo "PostgreSQL está disponível - continuando..."
 fi
 
@@ -40,24 +37,24 @@ if [ -z "$SECRET_KEY" ]; then
     exit 1
 fi
 
-# Esperar pelo banco de dados
+# Aguardar o banco de dados
 echo "Aguardando o banco de dados..."
 sleep 5
 
 # Instalar dependências Python
 pip install -r requirements.txt
 
-# Garantir que o Flask-Migrate está instalado (se já estiver em requirements.txt, esta linha é redundante mas inofensiva)
+# Garantir que o Flask-Migrate está instalado
 pip install flask-migrate
 
-# Verificar se o módulo Flask está disponível
+# Verificar se o Flask está disponível
 python -c "import flask" || pip install flask
 
 # Executar migrações do banco de dados
 echo "Executando migrações do banco de dados..."
 export FLASK_APP=src.main
-python -m flask db init || true  # Ignora erro se já inicializado
-python -m flask db migrate -m "Migração automática" || true  # Ignora erro se não houver alterações
+python -m flask db init || true
+python -m flask db migrate -m "Migração automática" || true
 python -m flask db upgrade || true
 
 # Executar script de inicialização do banco
@@ -66,7 +63,3 @@ python -m src.init_db || true
 
 # Executar o servidor Gunicorn
 exec gunicorn --bind 0.0.0.0:5000 "src.main:app"
-
-# Iniciar a aplicação
-echo "Iniciando a aplicação..."
-exec "$@"
