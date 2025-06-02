@@ -17,7 +17,7 @@ class LeadSchema(Schema):
     email = fields.Email(allow_none=True)
     phone = fields.String(validate=validate.Length(max=20), allow_none=True)
     linkedin_url = fields.URL(validate=validate.Length(max=255), allow_none=True)
-    status = fields.String(validate=OneOf([choice[0] for choice in Lead.STATUS_CHOICES]))
+    status = fields.String(validate=validate.OneOf(Lead.get_status_choices())) # <-- CORREÇÃO AQUI
     source = fields.String(validate=validate.Length(max=100), allow_none=True)
     notes = fields.String(validate=validate.Length(max=1000), allow_none=True)
     created_at = fields.DateTime(dump_only=True)
