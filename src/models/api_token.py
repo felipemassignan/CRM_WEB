@@ -1,12 +1,12 @@
 # src/models/api_token.py
 from src.models.db import db
 from datetime import datetime
+from src.models.db import db
 
 class ApiToken(db.Model):
     __tablename__ = 'api_tokens'
-    
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # Verifique se 'users' está certo
     name = db.Column(db.String(100), nullable=False)  # Nome descritivo do token
     token = db.Column(db.String(64), unique=True, nullable=False)  # Token de acesso
     is_active = db.Column(db.Boolean, default=True)
