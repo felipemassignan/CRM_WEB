@@ -10,7 +10,7 @@ import psycopg2
 try:
     database_url = os.environ.get('DATABASE_URL')
     if not database_url:
-        sys.exit(0)  # Assume SQLite se DATABASE_URL não estiver definida
+        sys.exit(0)
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
     conn = psycopg2.connect(database_url)
@@ -44,17 +44,9 @@ sleep 5
 # Instalar dependências Python
 pip install -r requirements.txt
 
-# Garantir que o Flask-Migrate está instalado
-pip install flask-migrate
-
-# Verificar se o Flask está disponível
-python -c "import flask" || pip install flask
-
 # Executar migrações do banco de dados
 echo "Executando migrações do banco de dados..."
 export FLASK_APP=src.main
-python -m flask db init || true
-python -m flask db migrate -m "Migração automática" || true
 python -m flask db upgrade || true
 
 # Executar script de inicialização do banco
