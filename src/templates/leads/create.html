@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Criar Lead - CRM ProspecÁ„o Industrial{% endblock %}
+{% block title %}Novo Lead - CRM Prospec√ß√£o Industrial{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col">
-        <h1><i class="bi bi-person-plus"></i> Criar Novo Lead</h1>
+        <h1><i class="bi bi-person-plus"></i> Novo Lead</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('leads.index') }}">Leads</a></li>
-                <li class="breadcrumb-item active">Criar Novo</li>
+                <li class="breadcrumb-item active">Novo Lead</li>
             </ol>
         </nav>
     </div>
@@ -20,7 +20,7 @@
         <form method="post">
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <h5 class="card-title">InformaÁıes B·sicas</h5>
+                    <h5 class="card-title">Informa√ß√µes B√°sicas</h5>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -84,11 +84,11 @@
 
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <h5 class="card-title">LocalizaÁ„o</h5>
+                    <h5 class="card-title">Localiza√ß√£o</h5>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="region" class="form-label">Regi„o</label>
+                        <label for="region" class="form-label">Regi√£o</label>
                         <select class="form-select" id="region" name="region">
                             <option value="">Selecione...</option>
                             {% for region in region_choices %}
@@ -113,14 +113,14 @@
 
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <h5 class="card-title">ClassificaÁ„o</h5>
+                    <h5 class="card-title">Classifica√ß√£o</h5>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status">
                             {% for status in status_choices %}
-                            <option value="{{ status }}" {% if status= ='Novo' %}selected{% endif %}>{{ status }}</option>
+                            <option value="{{ status }}">{{ status }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -130,7 +130,7 @@
                         <label for="priority" class="form-label">Prioridade</label>
                         <select class="form-select" id="priority" name="priority">
                             {% for priority in priority_choices %}
-                            <option value="{{ priority }}" {% if priority= ='MÈdia' %}selected{% endif %}>{{ priority }}</option>
+                            <option value="{{ priority }}">{{ priority }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -149,19 +149,19 @@
 
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <h5 class="card-title">InformaÁıes Adicionais</h5>
+                    <h5 class="card-title">Informa√ß√µes Adicionais</h5>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="company_size" class="form-label">Tamanho da Empresa</label>
                         <select class="form-select" id="company_size" name="company_size">
                             <option value="">Selecione...</option>
-                            <option value="1-10">1-10 funcion·rios</option>
-                            <option value="11-50">11-50 funcion·rios</option>
-                            <option value="51-200">51-200 funcion·rios</option>
-                            <option value="201-500">201-500 funcion·rios</option>
-                            <option value="501-1000">501-1000 funcion·rios</option>
-                            <option value="1001+">1001+ funcion·rios</option>
+                            <option value="1-10">1-10 funcion√°rios</option>
+                            <option value="11-50">11-50 funcion√°rios</option>
+                            <option value="51-200">51-200 funcion√°rios</option>
+                            <option value="201-500">201-500 funcion√°rios</option>
+                            <option value="501-1000">501-1000 funcion√°rios</option>
+                            <option value="1001+">1001+ funcion√°rios</option>
                         </select>
                     </div>
                 </div>
@@ -170,30 +170,32 @@
                         <label for="annual_revenue" class="form-label">Faturamento Anual</label>
                         <select class="form-select" id="annual_revenue" name="annual_revenue">
                             <option value="">Selecione...</option>
-                            <option value="AtÈ R$ 1 milh„o">AtÈ R$ 1 milh„o</option>
-                            <option value="R$ 1-10 milhıes">R$ 1-10 milhıes</option>
-                            <option value="R$ 10-50 milhıes">R$ 10-50 milhıes</option>
-                            <option value="R$ 50-100 milhıes">R$ 50-100 milhıes</option>
-                            <option value="R$ 100-500 milhıes">R$ 100-500 milhıes</option>
-                            <option value="Acima de R$ 500 milhıes">Acima de R$ 500 milhıes</option>
+                            <option value="At√© R$ 1 milh√£o">At√© R$ 1 milh√£o</option>
+                            <option value="R$ 1-10 milh√µes">R$ 1-10 milh√µes</option>
+                            <option value="R$ 10-50 milh√µes">R$ 10-50 milh√µes</option>
+                            <option value="R$ 50-100 milh√µes">R$ 50-100 milh√µes</option>
+                            <option value="R$ 100-500 milh√µes">R$ 100-500 milh√µes</option>
+                            <option value="Acima de R$ 500 milh√µes">Acima de R$ 500 milh√µes</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label for="technologies_used" class="form-label">Tecnologias Utilizadas</label>
-                        <input type="text" class="form-control" id="technologies_used" name="technologies_used" placeholder="Ex: Vis„o Computacional, AutomaÁ„o, RobÛtica...">
+                        <input type="text" class="form-control" id="technologies_used" name="technologies_used" 
+                               placeholder="Ex: Vis√£o Computacional, Automa√ß√£o, Rob√≥tica...">
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="mb-3">
                         <label for="pain_points" class="form-label">Pontos de Dor</label>
-                        <textarea class="form-control" id="pain_points" name="pain_points" rows="3" placeholder="Descreva os principais desafios ou problemas que o lead enfrenta..."></textarea>
+                        <textarea class="form-control" id="pain_points" name="pain_points" rows="3"
+                                  placeholder="Descreva os principais desafios ou problemas que o lead enfrenta..."></textarea>
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="mb-3">
-                        <label for="notes" class="form-label">ObservaÁıes</label>
+                        <label for="notes" class="form-label">Observa√ß√µes</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
                     </div>
                 </div>
@@ -201,9 +203,28 @@
 
             <div class="d-flex justify-content-end">
                 <a href="{{ url_for('leads.index') }}" class="btn btn-outline-secondary me-2">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Salvar Lead</button>
+                <button type="submit" class="btn btn-primary">Criar Lead</button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // M√°scara para telefone
+    document.getElementById('phone').addEventListener('input', function (e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    // Valida√ß√£o do formul√°rio
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!document.getElementById('name').value.trim()) {
+            e.preventDefault();
+            alert('Por favor, preencha o nome do lead.');
+            document.getElementById('name').focus();
+        }
+    });
+</script>
 {% endblock %}
