@@ -13,16 +13,15 @@ services:
       - FLASK_APP=src.main
       - FLASK_ENV=development
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/crm_python
-      - SECRET_KEY=${SECRET_KEY}
-      - MAIL_SERVER=${MAIL_SERVER}
-      - MAIL_PORT=${MAIL_PORT}
-      - MAIL_USE_TLS=${MAIL_USE_TLS}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
-      - LINKEDIN_CLIENT_ID=${LINKEDIN_CLIENT_ID}
-      - LINKEDIN_CLIENT_SECRET=${LINKEDIN_CLIENT_SECRET}
       - SECRET_KEY=98e15daff0ca359a52be3aafb0a3563b58a0d9a2858cbea89185943d18bff807
+      - MAIL_SERVER=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USE_TLS=true
+      - MAIL_USERNAME=seu_email@gmail.com
+      - MAIL_PASSWORD=sua_senha_ou_app_password
+      - MAIL_DEFAULT_SENDER=seu_email@gmail.com
+      - LINKEDIN_CLIENT_ID=seu_client_id
+      - LINKEDIN_CLIENT_SECRET=seu_client_secret
     
   db:
     image: postgres:13
