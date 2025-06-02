@@ -1,6 +1,6 @@
 from src.models.db import db
 from src.models.user import User
-from src.models.reminders import Reminders
+#from src.models.reminders import Reminders
 from src.main import create_app
 import os
 

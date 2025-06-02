@@ -3,7 +3,7 @@ from .api_token import ApiToken
 from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.template import Template
-from src.models.reminder import Reminder
+#from src.models.reminder import Reminder
 from src.models.user import User
 
 
