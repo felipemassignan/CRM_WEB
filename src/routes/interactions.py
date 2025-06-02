@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from src.models.interaction import Interaction
 from src.models.lead import Lead
 from src.models.db import db
@@ -7,12 +8,14 @@ from datetime import datetime
 bp = Blueprint('interactions', __name__, url_prefix='/interactions')
 
 @bp.route('/')
+@login_required
 def index():
     """Lista todas as interações."""
     interactions = Interaction.query.order_by(Interaction.date.desc()).all()
     return render_template('interactions/index.html', interactions=interactions)
 
 @bp.route('/create/<int:lead_id>', methods=('GET', 'POST'))
+@login_required
 def create(lead_id):
     """Cria uma nova interação para um lead específico."""
     lead = Lead.query.get_or_404(lead_id)
@@ -67,6 +70,7 @@ def create(lead_id):
     return render_template('interactions/create.html', lead=lead)
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
 def update(id):
     """Atualiza uma interação existente."""
     interaction = Interaction.query.get_or_404(id)
@@ -104,6 +108,7 @@ def update(id):
     return render_template('interactions/update.html', interaction=interaction, lead=lead)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
 def delete(id):
     """Exclui uma interação."""
     interaction = Interaction.query.get_or_404(id)
@@ -116,6 +121,7 @@ def delete(id):
     return redirect(url_for('leads.view', id=lead_id))
 
 @bp.route('/lead/<int:lead_id>')
+@login_required
 def by_lead(lead_id):
     """Lista todas as interações de um lead específico."""
     lead = Lead.query.get_or_404(lead_id)
@@ -124,6 +130,7 @@ def by_lead(lead_id):
     return render_template('interactions/by_lead.html', interactions=interactions, lead=lead)
 
 @bp.route('/pending')
+@login_required
 def pending():
     """Lista interações pendentes (com próximo passo)."""
     interactions = Interaction.query.filter(Interaction.next_step != None, 

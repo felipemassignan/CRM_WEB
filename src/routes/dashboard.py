@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request
+from flask_login import login_required, current_user
 from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.reminder import Reminder
@@ -11,6 +12,7 @@ import pytz
 bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 @bp.route('/')
+@login_required
 def index():
     """Enhanced dashboard with better usability and more insights."""
     # Quick stats

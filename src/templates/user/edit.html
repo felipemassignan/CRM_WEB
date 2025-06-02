@@ -1,0 +1,60 @@
+<!-- src/templates/user/edit.html -->
+{% extends 'base.html' %}
+
+{% block title %}Editar Usuário - CRM Industrial{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Editar Usuário</h2>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nome de usuário</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Nova senha (deixe em branco para manter a atual)</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+
+                {% if current_user.role == 'admin' %}
+                <div class="mb-3">
+                    <label for="role" class="form-label">Papel</label>
+                    <select class="form-select" id="role" name="role">
+                        <option value="user" {% if user.role= ='user' %}selected{% endif %}>Usuário</option>
+                        <option value="admin" {% if user.role= ='admin' %}selected{% endif %}>Administrador</option>
+                    </select>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {% if user.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Ativo</label>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                    {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('user.manage_users') }}" class="btn btn-secondary">Voltar</a>
+                    {% else %}
+                    <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Voltar</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

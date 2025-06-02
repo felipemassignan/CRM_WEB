@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user
 from src.models.lead import Lead, INDUSTRY_CHOICES, POSITION_CHOICES, REGION_CHOICES, STATUS_CHOICES, PRIORITY_CHOICES, SOURCE_CHOICES
 from src.models.db import db
 from datetime import datetime
@@ -9,6 +10,7 @@ import json
 bp = Blueprint('leads', __name__, url_prefix='/leads')
 
 @bp.route('/')
+@login_required
 def index():
     """Lista todos os leads."""
     leads = Lead.query.order_by(Lead.added_date.desc()).all()
@@ -20,6 +22,7 @@ def index():
                           priority_choices=PRIORITY_CHOICES)
 
 @bp.route('/create', methods=('GET', 'POST'))
+@login_required
 def create():
     """Cria um novo lead."""
     if request.method == 'POST':
@@ -85,6 +88,7 @@ def create():
                           source_choices=SOURCE_CHOICES)
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
 def update(id):
     """Atualiza um lead existente."""
     lead = Lead.query.get_or_404(id)
@@ -136,6 +140,7 @@ def update(id):
                           source_choices=SOURCE_CHOICES)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
 def delete(id):
     """Exclui um lead."""
     lead = Lead.query.get_or_404(id)
@@ -145,6 +150,7 @@ def delete(id):
     return redirect(url_for('leads.index'))
 
 @bp.route('/<int:id>/view')
+@login_required
 def view(id):
     """Visualiza detalhes de um lead."""
     lead = Lead.query.get_or_404(id)
@@ -152,6 +158,7 @@ def view(id):
     return render_template('leads/view.html', lead=lead, interactions=interactions)
 
 @bp.route('/filter', methods=('GET', 'POST'))
+@login_required
 def filter():
     """Filtra leads por status, setor, prioridade, etc."""
     status = request.args.get('status')
@@ -192,6 +199,7 @@ def filter():
                           priority_choices=PRIORITY_CHOICES)
 
 @bp.route('/import', methods=('GET', 'POST'))
+@login_required
 def import_leads():
     """Importa leads de um arquivo CSV."""
     if request.method == 'POST':
@@ -249,6 +257,7 @@ def import_leads():
     return render_template('leads/import.html')
 
 @bp.route('/export')
+@login_required
 def export_leads():
     """Exporta leads para um arquivo CSV."""
     leads = Lead.query.all()
@@ -296,6 +305,7 @@ def export_leads():
     return jsonify({'csv_data': output.getvalue()})
 
 @bp.route('/options')
+@login_required
 def get_options():
     """Retorna as opções para os campos de seleção."""
     return jsonify({

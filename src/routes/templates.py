@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from src.models.template import Template
 from src.models.db import db
 from datetime import datetime
@@ -6,12 +7,14 @@ from datetime import datetime
 bp = Blueprint('templates', __name__, url_prefix='/templates')
 
 @bp.route('/')
+@login_required
 def index():
     """Lista todos os templates de mensagem."""
     templates = Template.query.order_by(Template.category).all()
     return render_template('templates/index.html', templates=templates)
 
 @bp.route('/create', methods=('GET', 'POST'))
+@login_required
 def create():
     """Cria um novo template de mensagem."""
     if request.method == 'POST':
@@ -48,6 +51,7 @@ def create():
     return render_template('templates/create.html')
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
 def update(id):
     """Atualiza um template existente."""
     template = Template.query.get_or_404(id)
@@ -77,6 +81,7 @@ def update(id):
     return render_template('templates/update.html', template=template)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
 def delete(id):
     """Exclui um template."""
     template = Template.query.get_or_404(id)
@@ -86,12 +91,14 @@ def delete(id):
     return redirect(url_for('templates.index'))
 
 @bp.route('/<int:id>/view')
+@login_required
 def view(id):
     """Visualiza detalhes de um template."""
     template = Template.query.get_or_404(id)
     return render_template('templates/view.html', template=template)
 
 @bp.route('/filter')
+@login_required
 def filter():
     """Filtra templates por categoria e cargo alvo."""
     category = request.args.get('category')
@@ -112,6 +119,7 @@ def filter():
                           position_filter=target_position)
 
 @bp.route('/generate/<int:template_id>/<int:lead_id>')
+@login_required
 def generate(template_id, lead_id):
     """Gera uma mensagem personalizada com base em um template e dados de um lead."""
     from src.models.lead import Lead
@@ -147,12 +155,14 @@ def generate(template_id, lead_id):
                           generated_content=content)
 
 @bp.route('/categories')
+@login_required
 def categories():
     """Lista todas as categorias de templates."""
     categories = db.session.query(Template.category).distinct().all()
     return render_template('templates/categories.html', categories=categories)
 
 @bp.route('/positions')
+@login_required
 def positions():
     """Lista todos os cargos alvo de templates."""
     positions = db.session.query(Template.target_position).distinct().all()

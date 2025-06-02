@@ -34,6 +34,16 @@ if [ -n "$DATABASE_URL" ]; then
   >&2 echo "PostgreSQL está disponível - continuando..."
 fi
 
+# Verificar variáveis de ambiente críticas
+if [ -z "$SECRET_KEY" ]; then
+    echo "ERRO: A variável de ambiente SECRET_KEY não está definida!"
+    exit 1
+fi
+
+# Esperar pelo banco de dados
+echo "Aguardando o banco de dados..."
+sleep 5
+
 # Garantir que o Flask-Migrate está instalado
 pip install flask-migrate
 
@@ -50,6 +60,9 @@ python -m flask db upgrade || true
 # Executar script de inicialização do banco
 echo "Inicializando banco de dados..."
 python -m src.init_db || true
+
+# Executar o servidor Gunicorn
+exec gunicorn --bind 0.0.0.0:5000 "src.main:app"
 
 # Iniciar a aplicação
 echo "Iniciando a aplicação..."

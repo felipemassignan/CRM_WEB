@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_required, current_user
 from src.models.lead import Lead
 from src.models.interaction import Interaction
 from src.models.template import Template
@@ -11,11 +12,13 @@ from datetime import datetime
 bp = Blueprint('integrations', __name__, url_prefix='/integrations')
 
 @bp.route('/')
+@login_required
 def index():
     """Página principal de integrações."""
     return render_template('integrations/index.html')
 
 @bp.route('/email', methods=('GET', 'POST'))
+@login_required
 def email():
     """Integração com email."""
     if request.method == 'POST':
@@ -26,6 +29,7 @@ def email():
     return render_template('integrations/email.html')
 
 @bp.route('/linkedin', methods=('GET', 'POST'))
+@login_required
 def linkedin():
     """Integração com LinkedIn."""
     if request.method == 'POST':
@@ -36,6 +40,7 @@ def linkedin():
     return render_template('integrations/linkedin.html')
 
 @bp.route('/import', methods=('GET', 'POST'))
+@login_required
 def import_data():
     """Importa dados de um arquivo CSV."""
     if request.method == 'POST':
@@ -112,6 +117,7 @@ def import_data():
     return render_template('integrations/import.html')
 
 @bp.route('/export')
+@login_required
 def export_data():
     """Exporta dados para um arquivo CSV."""
     export_type = request.args.get('type', 'leads')
@@ -195,6 +201,7 @@ def export_data():
         return redirect(url_for('dashboard.index'))
 
 @bp.route('/send_email/<int:lead_id>', methods=('GET', 'POST'))
+@login_required
 def send_email(lead_id):
     """Envia email para um lead específico."""
     lead = Lead.query.get_or_404(lead_id)
@@ -233,6 +240,7 @@ def send_email(lead_id):
     return render_template('integrations/send_email.html', lead=lead, templates=templates)
 
 @bp.route('/api/leads')
+@login_required
 def api_leads():
     """API simples para obter leads em formato JSON."""
     leads = Lead.query.all()
@@ -250,6 +258,7 @@ def api_leads():
     return jsonify(leads_list)
 
 @bp.route('/api/interactions/<int:lead_id>')
+@login_required
 def api_interactions(lead_id):
     """API simples para obter interações de um lead em formato JSON."""
     interactions = Interaction.query.filter_by(lead_id=lead_id).all()

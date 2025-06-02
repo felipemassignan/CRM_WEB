@@ -1,2 +1,57 @@
-node_modules/
+# .gitignore
+# Arquivos de ambiente
 .env
+.env.*
+!.env.example
+
+# Arquivos Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Arquivos de banco de dados
+*.sqlite
+*.db
+
+# Arquivos de log
+*.log
+logs/
+
+# Diretórios de ambiente virtual
+venv/
+ENV/
+env/
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de migração do Flask-Migrate
+migrations/
+
+# Arquivos temporários
+tmp/
+temp/

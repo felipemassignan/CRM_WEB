@@ -1,0 +1,105 @@
+<!-- src/templates/user/api_tokens.html -->
+{% extends 'base.html' %}
+
+{% block title %}Tokens de API - CRM Industrial{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Tokens de API</h2>
+    <p class="text-muted">Os tokens de API permitem que aplicações externas acessem o CRM em seu nome.</p>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Criar Novo Token</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('user.create_api_token') }}">
+                <div class="mb-3">
+                    <label for="token_name" class="form-label">Nome do Token</label>
+                    <input type="text" class="form-control" id="token_name" name="token_name" placeholder="Ex: Agente de IA para LinkedIn" required>
+                    <div class="form-text">Dê um nome descritivo para identificar o propósito deste token.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Gerar Token</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Seus Tokens</h5>
+        </div>
+        <div class="card-body">
+            {% if tokens %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Criado em</th>
+                            <th>Último uso</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for token in tokens %}
+                        <tr>
+                            <td>{{ token.name }}</td>
+                            <td>{{ token.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ token.last_used_at.strftime('%d/%m/%Y %H:%M') if token.last_used_at else 'Nunca usado' }}</td>
+                            <td>
+                                {% if token.is_active %}
+                                <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                <span class="badge bg-danger">Revogado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if token.is_active %}
+                                <form method="post" action="{{ url_for('user.revoke_api_token', token_id=token.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja revogar este token? Isso impedirá seu uso, mas você poderá vê-lo no histórico.');">
+                                    <button type="submit" class="btn btn-sm btn-warning">Revogar</button>
+                                </form>
+                                {% endif %}
+                                <form method="post" action="{{ url_for('user.delete_api_token', token_id=token.id) }}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este token? Esta ação não pode ser desfeita.');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">Você ainda não criou nenhum token de API.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Como usar os tokens de API</h5>
+        </div>
+        <div class="card-body">
+            <p>Para autenticar requisições à API, você pode usar um dos seguintes métodos:</p>
+
+            <h6>1. Autenticação via Header</h6>
+            <pre><code>Authorization: Bearer SEU_TOKEN_AQUI</code></pre>
+
+            <h6>2. Autenticação via Parâmetro de Query</h6>
+            <pre><code>https://seu-crm.com/api/leads?token=SEU_TOKEN_AQUI</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Importante:</strong> Mantenha seus tokens seguros! Eles concedem acesso ao CRM em seu nome.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

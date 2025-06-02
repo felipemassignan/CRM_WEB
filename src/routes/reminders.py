@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required, current_user
 from src.models.reminder import Reminder
 from src.models.lead import Lead
 from src.models.db import db
@@ -7,12 +8,14 @@ from datetime import datetime
 bp = Blueprint('reminders', __name__, url_prefix='/reminders')
 
 @bp.route('/')
+@login_required
 def index():
     """Lista todos os lembretes."""
     reminders = Reminder.query.order_by(Reminder.due_date).all()
     return render_template('reminders/index.html', reminders=reminders)
 
 @bp.route('/create/<int:lead_id>', methods=('GET', 'POST'))
+@login_required
 def create(lead_id):
     """Cria um novo lembrete para um lead específico."""
     lead = Lead.query.get_or_404(lead_id)
@@ -54,6 +57,7 @@ def create(lead_id):
     return render_template('reminders/create.html', lead=lead)
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@login_required
 def update(id):
     """Atualiza um lembrete existente."""
     reminder = Reminder.query.get_or_404(id)
@@ -89,6 +93,7 @@ def update(id):
     return render_template('reminders/update.html', reminder=reminder, lead=lead)
 
 @bp.route('/<int:id>/delete', methods=('POST',))
+@login_required
 def delete(id):
     """Exclui um lembrete."""
     reminder = Reminder.query.get_or_404(id)
@@ -101,6 +106,7 @@ def delete(id):
     return redirect(url_for('leads.view', id=lead_id))
 
 @bp.route('/<int:id>/complete', methods=('POST',))
+@login_required
 def complete(id):
     """Marca um lembrete como concluído."""
     reminder = Reminder.query.get_or_404(id)
@@ -111,6 +117,7 @@ def complete(id):
     return redirect(url_for('reminders.index'))
 
 @bp.route('/today')
+@login_required
 def today():
     """Lista lembretes para hoje."""
     today = datetime.utcnow().date()
@@ -122,6 +129,7 @@ def today():
     return render_template('reminders/today.html', reminders=reminders)
 
 @bp.route('/lead/<int:lead_id>')
+@login_required
 def by_lead(lead_id):
     """Lista todos os lembretes de um lead específico."""
     lead = Lead.query.get_or_404(lead_id)
@@ -130,6 +138,7 @@ def by_lead(lead_id):
     return render_template('reminders/by_lead.html', reminders=reminders, lead=lead)
 
 @bp.route('/overdue')
+@login_required
 def overdue():
     """Lista lembretes atrasados."""
     today = datetime.utcnow().date()
