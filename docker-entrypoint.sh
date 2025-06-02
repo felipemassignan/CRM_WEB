@@ -46,7 +46,7 @@ sleep 5
 
 # Garantir que o Flask-Migrate está instalado
 pip install flask-migrate
-=======
+
 # Instalar dependências Python
 pip install -r requirements.txt
 
