@@ -6,6 +6,33 @@ from src.forms.user_forms import LoginForm, RegistrationForm, EditUserForm, ApiT
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 
+# --- NOVA ROTA DE LOGIN ---
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.index'))
+    
+    form = LoginForm() # Instancia o formulário de login
+    if form.validate_on_submit():
+        user = UserService.get_user_by_username(form.username.data) # Você precisará de um método para buscar usuário por username
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            flash('Login bem-sucedido!', 'success')
+            return redirect(next_page or url_for('dashboard.index'))
+        else:
+            flash('Login inválido. Verifique seu nome de usuário e senha.', 'danger')
+    
+    return render_template('user/login.html', form=form) # Passa o formulário para o template
+# --- FIM NOVA ROTA DE LOGIN ---
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Você foi desconectado.', 'info')
+    return redirect(url_for('user.login')) # Redireciona para a página de login após o logout
+
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
