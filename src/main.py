@@ -55,6 +55,17 @@ def create_app(config_name='development'):
     app.register_blueprint(user_bp)
     app.register_blueprint(api_bp)
 
+    # --- DEBUG: Imprimir o mapa de URLs (APENAS PARA DEPURAR NO RAILWAY) ---
+    # Remova este bloco após resolver o problema de rota.
+    with app.app_context(): # Garante que estamos no contexto da aplicação
+        print("--- Registered URL Map ---")
+        print(app.url_map)
+        print("--------------------------")
+        app.logger.info("--- Registered URL Map (Logger) ---") # Usar logger também é bom
+        app.logger.info(str(app.url_map))
+        app.logger.info("-----------------------------------")
+    # --- FIM DEBUG ---
+
     # --- NOVA ROTA RAIZ ---
     @app.route('/')
     def index():

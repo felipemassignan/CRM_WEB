@@ -62,3 +62,7 @@ def delete_user(user_id):
     else:
         flash('UsuÃ¡rio excluÃ­do com sucesso.')
     return redirect(url_for('user.manage_users'))
+
+# --- DEBUG: Confirma que este arquivo foi carregado ---
+print("DEBUG: src.routes.user.py loaded and blueprint 'user' defined.")
+# --- FIM DEBUG ---
