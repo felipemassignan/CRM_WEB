@@ -26,6 +26,14 @@ def login():
     return render_template('user/login.html', form=form) # Passa o formulário para o template
 # --- FIM NOVA ROTA DE LOGIN ---
 
+@bp.route('/api-tokens', methods=['GET'])
+@login_required
+def api_tokens():
+    # No futuro, você buscaria os tokens de API do usuário logado aqui.
+    # Exemplo: user_api_tokens = UserService.get_api_tokens_for_user(current_user.id)
+    user_api_tokens = [] # Placeholder por enquanto
+    return render_template('user/api_tokens.html', title='Meus Tokens de API', tokens=user_api_tokens)
+
 @bp.route('/logout')
 @login_required
 def logout():
